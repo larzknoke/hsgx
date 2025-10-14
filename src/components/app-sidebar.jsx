@@ -26,7 +26,7 @@ import {
 const items = [
   {
     title: "Abrechnung",
-    url: "#",
+    url: "abrechnung",
     icon: Coins,
   },
   {
