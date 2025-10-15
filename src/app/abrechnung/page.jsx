@@ -24,6 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlusIcon, SquarePlusIcon } from "lucide-react";
+import Link from "next/link";
 
 function Abrechnung() {
   return (
@@ -36,9 +37,10 @@ function Abrechnung() {
             <InputGroupButton variant="secondary">Suche</InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
-        <Button variant="success">
-          {" "}
-          <PlusIcon /> Neue Abrechnung
+        <Button variant="success" asChild>
+          <Link href="/abrechnung/neu">
+            <PlusIcon /> Neue Abrechnung
+          </Link>
         </Button>
       </div>
       <Table>
