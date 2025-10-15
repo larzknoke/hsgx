@@ -50,7 +50,7 @@ export default function BillForm() {
         onReset={onReset}
         className="space-y-8 @container"
       >
-        <div className="grid grid-cols-12 gap-4">
+        <div className="grid grid-cols-12 gap-6">
           <FormField
             control={form.control}
             name="trainer"
