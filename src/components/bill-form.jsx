@@ -17,12 +17,14 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 export default function BillForm() {
   const formSchema = z.object({
     trainer: z.string().min(1, { message: "This field is required" }),
     stammverein: z.string().min(1, { message: "This field is required" }),
     mannschaft: z.string().min(1, { message: "This field is required" }),
+    iban: z.string(),
   });
 
   const form = useForm({
@@ -31,6 +33,7 @@ export default function BillForm() {
       trainer: "",
       stammverein: "",
       mannschaft: "",
+      iban: "",
     },
   });
 
@@ -50,7 +53,7 @@ export default function BillForm() {
         onReset={onReset}
         className="space-y-8 @container"
       >
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-12 gap-4">
           <FormField
             control={form.control}
             name="trainer"
@@ -168,6 +171,32 @@ export default function BillForm() {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                  </FormControl>
+
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="iban"
+            render={({ field }) => (
+              <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                <FormLabel className="flex shrink-0">IBAN</FormLabel>
+
+                <div className="w-full">
+                  <FormControl>
+                    <div className="relative w-full">
+                      <Input
+                        key="text-input-0"
+                        placeholder="z.b. DE89 3704 00440 5320 13000"
+                        type="text"
+                        id="iban"
+                        className=" "
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
 
                   <FormMessage />
