@@ -32,8 +32,8 @@ export default async function RootLayout({ children }) {
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <AppSidebar />
-          <main>
-            <SidebarTrigger />
+          <main className="flex flex-1 flex-col p-6">
+            {/* <SidebarTrigger /> */}
             {children}
           </main>
         </body>
