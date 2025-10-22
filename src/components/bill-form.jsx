@@ -19,13 +19,21 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import TrainingSlots from "@/components/training-slots";
+import BillCalendar from "./bill-calendar";
+import { Button } from "./ui/button";
 
 export default function BillForm() {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [trainingSlots, setTrainingSlots] = useState([]);
+  const [finalEvents, setFinalEvents] = useState([]); // State to store final events
+
   const formSchema = z.object({
-    trainer: z.string().min(1, { message: "This field is required" }),
-    stammverein: z.string().min(1, { message: "This field is required" }),
-    mannschaft: z.string().min(1, { message: "This field is required" }),
-    iban: z.string(),
+    // trainer: z.string().min(1, { message: "This field is required" }),
+    // stammverein: z.string().min(1, { message: "This field is required" }),
+    // mannschaft: z.string().min(1, { message: "This field is required" }),
+    // iban: z.string(),
   });
 
   const form = useForm({
@@ -38,6 +46,15 @@ export default function BillForm() {
     },
   });
 
+  const trainingSlotForm = useForm({
+    defaultValues: {
+      weekday: "",
+      location: "",
+      start: "",
+      end: "",
+    },
+  });
+
   function onSubmit(values) {
     console.log(values);
   }
@@ -47,193 +64,218 @@ export default function BillForm() {
     form.clearErrors();
   }
 
+  function addTrainingSlot(values) {
+    console.log("values", values);
+    const newSlot = trainingSlotForm.getValues();
+    setTrainingSlots([...trainingSlots, newSlot]);
+    setDialogOpen(false);
+    trainingSlotForm.reset();
+  }
+
+  function removeTrainingSlot(index) {
+    setTrainingSlots(trainingSlots.filter((_, i) => i !== index));
+  }
+
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        onReset={onReset}
-        className="space-y-8 @container"
-      >
-        <div className="flex flex-row gap-6">
-          <div className="w-1/2 ">
-            <Card>
-              <CardHeader>
-                <CardTitle>Stammdaten</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-12 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="trainer"
-                    render={({ field }) => (
-                      <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
-                        <FormLabel className="flex shrink-0">
-                          Übungsleiter/in
-                        </FormLabel>
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          onReset={onReset}
+          className="space-y-8 @container"
+        >
+          <div className="flex flex-row gap-6">
+            <div className="w-1/2 ">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Stammdaten</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-12 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="trainer"
+                      render={({ field }) => (
+                        <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                          <FormLabel className="flex shrink-0">
+                            Übungsleiter/in
+                          </FormLabel>
 
-                        <div className="w-full">
-                          <FormControl>
-                            <Select
-                              key="select-0"
-                              id="trainer"
-                              className=""
-                              {...field}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger className="w-full ">
-                                <SelectValue placeholder="Überungsleiter auswählen..." />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem key="user_1" value="user_1">
-                                  Johannes Wellmann
-                                </SelectItem>
-
-                                <SelectItem key="user_2" value="user_2">
-                                  Lars Knoke
-                                </SelectItem>
-
-                                <SelectItem key="user_3" value="user_3">
-                                  Kirsten Gronstedt
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="stammverein"
-                    render={({ field }) => (
-                      <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
-                        <FormLabel className="flex shrink-0">
-                          Stammverein
-                        </FormLabel>
-
-                        <div className="w-full">
-                          <FormControl>
-                            <Select
-                              key="select-0-1"
-                              id="stammverein"
-                              className=""
-                              {...field}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger className="w-full ">
-                                <SelectValue placeholder="Stammverein auswählen..." />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem key="hol" value="hol">
-                                  MTV Holzminden
-                                </SelectItem>
-
-                                <SelectItem key="sdorf" value="sdorf">
-                                  TV Stadtoldendorf
-                                </SelectItem>
-
-                                <SelectItem key="bevern" value="bevern">
-                                  MTV Bevern
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="mannschaft"
-                    render={({ field }) => (
-                      <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
-                        <FormLabel className="flex shrink-0">
-                          Mannschaft
-                        </FormLabel>
-
-                        <div className="w-full">
-                          <FormControl>
-                            <Select
-                              key="select-0-1-2"
-                              id="mannschaft"
-                              className=""
-                              {...field}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger className="w-full ">
-                                <SelectValue placeholder="Mannschaft auswählen..." />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem key="mD" value="mD">
-                                  männlich D
-                                </SelectItem>
-
-                                <SelectItem key="wC" value="wC">
-                                  weiblich C
-                                </SelectItem>
-
-                                <SelectItem key="herren1" value="herren1">
-                                  Herren 1
-                                </SelectItem>
-
-                                <SelectItem key="Herren2" value="Herren2">
-                                  Herren 2
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="iban"
-                    render={({ field }) => (
-                      <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
-                        <FormLabel className="flex shrink-0">IBAN</FormLabel>
-
-                        <div className="w-full">
-                          <FormControl>
-                            <div className="relative w-full">
-                              <Input
-                                key="text-input-0"
-                                placeholder="z.b. DE89 3704 00440 5320 13000"
-                                type="text"
-                                id="iban"
-                                className=" "
+                          <div className="w-full">
+                            <FormControl>
+                              <Select
+                                key="select-0"
+                                id="trainer"
+                                className=""
                                 {...field}
-                              />
-                            </div>
-                          </FormControl>
+                                onValueChange={field.onChange}
+                              >
+                                <SelectTrigger className="w-full ">
+                                  <SelectValue placeholder="Überungsleiter auswählen..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem key="user_1" value="user_1">
+                                    Johannes Wellmann
+                                  </SelectItem>
 
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+                                  <SelectItem key="user_2" value="user_2">
+                                    Lars Knoke
+                                  </SelectItem>
+
+                                  <SelectItem key="user_3" value="user_3">
+                                    Kirsten Gronstedt
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="stammverein"
+                      render={({ field }) => (
+                        <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                          <FormLabel className="flex shrink-0">
+                            Stammverein
+                          </FormLabel>
+
+                          <div className="w-full">
+                            <FormControl>
+                              <Select
+                                key="select-0-1"
+                                id="stammverein"
+                                className=""
+                                {...field}
+                                onValueChange={field.onChange}
+                              >
+                                <SelectTrigger className="w-full ">
+                                  <SelectValue placeholder="Stammverein auswählen..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem key="hol" value="hol">
+                                    MTV Holzminden
+                                  </SelectItem>
+
+                                  <SelectItem key="sdorf" value="sdorf">
+                                    TV Stadtoldendorf
+                                  </SelectItem>
+
+                                  <SelectItem key="bevern" value="bevern">
+                                    MTV Bevern
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="mannschaft"
+                      render={({ field }) => (
+                        <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                          <FormLabel className="flex shrink-0">
+                            Mannschaft
+                          </FormLabel>
+
+                          <div className="w-full">
+                            <FormControl>
+                              <Select
+                                key="select-0-1-2"
+                                id="mannschaft"
+                                className=""
+                                {...field}
+                                onValueChange={field.onChange}
+                              >
+                                <SelectTrigger className="w-full ">
+                                  <SelectValue placeholder="Mannschaft auswählen..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem key="mD" value="mD">
+                                    männlich D
+                                  </SelectItem>
+
+                                  <SelectItem key="wC" value="wC">
+                                    weiblich C
+                                  </SelectItem>
+
+                                  <SelectItem key="herren1" value="herren1">
+                                    Herren 1
+                                  </SelectItem>
+
+                                  <SelectItem key="Herren2" value="Herren2">
+                                    Herren 2
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="iban"
+                      render={({ field }) => (
+                        <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                          <FormLabel className="flex shrink-0">IBAN</FormLabel>
+
+                          <div className="w-full">
+                            <FormControl>
+                              <div className="relative w-full">
+                                <Input
+                                  key="text-input-0"
+                                  placeholder="z.b. DE89 3704 00440 5320 13000"
+                                  type="text"
+                                  id="iban"
+                                  className=" "
+                                  {...field}
+                                />
+                              </div>
+                            </FormControl>
+
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+              <Button type="submit" className="mt-4" variant="success">
+                Abrechnung speichern
+              </Button>
+              <div>
+                <h2>Final Events</h2>
+                <pre>{JSON.stringify(finalEvents, null, 2)}</pre>
+              </div>
+            </div>
+            <div className="w-1/2 gap-4 flex flex-col">
+              <TrainingSlots
+                trainingSlots={trainingSlots}
+                trainingSlotForm={trainingSlotForm}
+                addTrainingSlot={addTrainingSlot}
+                removeTrainingSlot={removeTrainingSlot}
+                dialogOpen={dialogOpen}
+                setDialogOpen={setDialogOpen}
+              />
+              <BillCalendar
+                trainingSlots={trainingSlots}
+                setFinalEvents={setFinalEvents} // Pass the callback to BillCalendar
+              />
+            </div>
           </div>
-          <div className="w-1/2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Trainingszeiten</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-12 gap-4"></div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </>
   );
 }

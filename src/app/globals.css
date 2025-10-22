@@ -119,8 +119,28 @@
   body {
     @apply bg-background text-foreground;
   }
+  button:not([disabled]),
+  [role="button"]:not([disabled]) {
+    cursor: pointer;
+  }
 }
 
 h1 {
   @apply scroll-m-20 border-b pb-2 text-xl font-semibold tracking-tight first:mt-0;
+}
+
+.fc .fc-button {
+  @apply text-xs px-2 py-1 rounded-sm;
+}
+
+.fc .fc-toolbar-title {
+  @apply text-base;
+}
+
+.fc .fc-list-event-graphic {
+  align-content: center;
+}
+
+.fc-event {
+  @apply hover:cursor-pointer;
 }
