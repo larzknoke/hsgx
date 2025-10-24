@@ -113,8 +113,8 @@ export default function BillCalendar({ trainingSlots, setFinalEvents }) {
   // Recalculate grouped events and total cost whenever events change
   useEffect(() => {
     const grouped = events.reduce((acc, event) => {
-      if (!acc[event.title]) {
-        acc[event.title] = { count: 0, totalCost: 0 };
+      if (!acc[event.location]) {
+        acc[event.location] = { count: 0, totalCost: 0 };
       }
 
       // Calculate the duration of the event in hours
@@ -122,8 +122,8 @@ export default function BillCalendar({ trainingSlots, setFinalEvents }) {
       const end = new Date(event.end);
       const durationInHours = (end - start) / (1000 * 60 * 60); // Convert milliseconds to hours
 
-      acc[event.title].count += 1;
-      acc[event.title].totalCost += durationInHours * 5; // 5€ per hour
+      acc[event.location].count += 1;
+      acc[event.location].totalCost += durationInHours * 5; // 5€ per hour
       return acc;
     }, {});
 

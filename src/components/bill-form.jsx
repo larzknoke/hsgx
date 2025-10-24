@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { set, z } from "zod";
 import { useForm } from "react-hook-form";
 import {
   Select,
@@ -23,9 +23,11 @@ import { useState } from "react";
 import TrainingSlots from "@/components/training-slots";
 import BillCalendar from "./bill-calendar";
 import { Button } from "./ui/button";
+import SummaryDialog from "@/components/SummaryDialog";
 
 export default function BillForm() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogData, setDialogData] = useState(false);
   const [trainingSlots, setTrainingSlots] = useState([]);
   const [finalEvents, setFinalEvents] = useState([]); // State to store final events
 
@@ -55,8 +57,9 @@ export default function BillForm() {
     },
   });
 
-  function onSubmit(values) {
-    console.log(values);
+  function onSubmit() {
+    console.log("onSubmit", form.getValues());
+    setDialogData(true);
   }
 
   function onReset() {
@@ -78,19 +81,19 @@ export default function BillForm() {
 
   return (
     <>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          onReset={onReset}
-          className="space-y-8 @container"
-        >
-          <div className="flex flex-row gap-6">
-            <div className="w-1/2 ">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Stammdaten</CardTitle>
-                </CardHeader>
-                <CardContent>
+      <div className="flex flex-row gap-6">
+        <div className="w-1/2 ">
+          <Card>
+            <CardHeader>
+              <CardTitle>Stammdaten</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  onReset={onReset}
+                  className="space-y-8 @container"
+                >
                   <div className="grid grid-cols-12 gap-4">
                     <FormField
                       control={form.control}
@@ -249,33 +252,44 @@ export default function BillForm() {
                       )}
                     />
                   </div>
-                </CardContent>
-              </Card>
-              <Button type="submit" className="mt-4" variant="success">
-                Abrechnung speichern
-              </Button>
-              <div>
-                <h2>Final Events</h2>
-                <pre>{JSON.stringify(finalEvents, null, 2)}</pre>
-              </div>
-            </div>
-            <div className="w-1/2 gap-4 flex flex-col">
-              <TrainingSlots
-                trainingSlots={trainingSlots}
-                trainingSlotForm={trainingSlotForm}
-                addTrainingSlot={addTrainingSlot}
-                removeTrainingSlot={removeTrainingSlot}
-                dialogOpen={dialogOpen}
-                setDialogOpen={setDialogOpen}
-              />
-              <BillCalendar
-                trainingSlots={trainingSlots}
-                setFinalEvents={setFinalEvents} // Pass the callback to BillCalendar
-              />
-            </div>
-          </div>
-        </form>
-      </Form>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+          <Button
+            onClick={form.handleSubmit(onSubmit)}
+            className="mt-4"
+            variant="success"
+          >
+            Abrechnung speichern
+          </Button>
+          {/* <div>
+            <h2>Final Events</h2>
+            <pre>{JSON.stringify(finalEvents, null, 2)}</pre>
+          </div> */}
+        </div>
+        <div className="w-1/2 gap-4 flex flex-col">
+          <TrainingSlots
+            trainingSlots={trainingSlots}
+            trainingSlotForm={trainingSlotForm}
+            addTrainingSlot={addTrainingSlot}
+            removeTrainingSlot={removeTrainingSlot}
+            dialogOpen={dialogOpen}
+            setDialogOpen={setDialogOpen}
+          />
+          <BillCalendar
+            trainingSlots={trainingSlots}
+            setFinalEvents={setFinalEvents} // Pass the callback to BillCalendar
+          />
+        </div>
+      </div>
+
+      <SummaryDialog
+        isOpen={dialogData}
+        onClose={() => setDialogData(false)}
+        formData={form.getValues()} // Pass form data
+        finalEvents={finalEvents} // Pass final events
+      />
     </>
   );
 }
