@@ -14,10 +14,38 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PlusIcon, SquarePlusIcon } from "lucide-react";
+import { CheckCircle2, OctagonAlertIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
 
 function Abrechnung() {
+  // Dummy data for testing
+  const dummyData = [
+    {
+      id: 1,
+      trainer: "Kerstin Gronstedt",
+      mannschaft: "Weibl. C",
+      quartal: "Q3",
+      bezahlt: true,
+      betrag: "128,00 €",
+    },
+    {
+      id: 2,
+      trainer: "Johannes Wellmann",
+      mannschaft: "Männl. D",
+      quartal: "Q3",
+      bezahlt: false,
+      betrag: "112,00 €",
+    },
+    {
+      id: 3,
+      trainer: "Lars Knoke",
+      mannschaft: "Herren 1",
+      quartal: "Q2",
+      bezahlt: true,
+      betrag: "150,00 €",
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
       <h1>Abrechnungen</h1>
@@ -42,24 +70,27 @@ function Abrechnung() {
             <TableHead>Übungsleiter</TableHead>
             <TableHead>Mannschaft</TableHead>
             <TableHead>Quartal</TableHead>
+            <TableHead>Bezahlt</TableHead>
             <TableHead className="text-right">Betrag</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell className="font-medium">1</TableCell>
-            <TableCell className="font-medium">Kerstin Gronstedt</TableCell>
-            <TableCell>Weibl. C</TableCell>
-            <TableCell>Q3</TableCell>
-            <TableCell className="text-right">128,00 €</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-medium">2</TableCell>
-            <TableCell className="font-medium">Johannes Wellmann</TableCell>
-            <TableCell>Männl. D</TableCell>
-            <TableCell>Q3</TableCell>
-            <TableCell className="text-right">112,00 €</TableCell>
-          </TableRow>
+          {dummyData.map((entry) => (
+            <TableRow key={entry.id}>
+              <TableCell className="font-medium">{entry.id}</TableCell>
+              <TableCell className="font-medium">{entry.trainer}</TableCell>
+              <TableCell>{entry.mannschaft}</TableCell>
+              <TableCell>{entry.quartal}</TableCell>
+              <TableCell>
+                {entry.bezahlt ? (
+                  <CheckCircle2 className="text-green-700" size={"22px"} />
+                ) : (
+                  <OctagonAlertIcon className="text-red-600" size={"22px"} />
+                )}
+              </TableCell>
+              <TableCell className="text-right">{entry.betrag}</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </div>
