@@ -1,4 +1,4 @@
-import BillForm from "@/components/bill-form";
+import BillForm from "./components/bill-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 function NewBill() {

@@ -6,7 +6,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Separator } from "./ui/separator";
+import { Separator } from "@/components/ui/separator";
 
 export default function SummaryDialog({
   isOpen,

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2Icon } from "lucide-react";
-import TrainingSlotFormComp from "@/components/trainings-slot-form";
+import TrainingSlotFormComp from "@/app/(bill)/abrechnung/neu/components/trainings-slot-form";
 import { getWeekdayName } from "@/lib/weekdayHelper";
 
 export default function TrainingSlots({

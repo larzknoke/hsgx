@@ -20,10 +20,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
-import TrainingSlots from "@/components/training-slots";
+import TrainingSlots from "@/app/(bill)/abrechnung/neu/components/training-slots";
 import BillCalendar from "./bill-calendar";
-import { Button } from "./ui/button";
-import SummaryDialog from "@/components/SummaryDialog";
+import { Button } from "@/components/ui/button";
+import SummaryDialog from "./summary-dialog";
 
 export default function BillForm() {
   const [dialogOpen, setDialogOpen] = useState(false);

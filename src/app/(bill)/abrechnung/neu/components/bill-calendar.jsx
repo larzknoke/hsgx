@@ -5,8 +5,8 @@ import listPlugin from "@fullcalendar/list"; // Import the list plugin
 import deLocale from "@fullcalendar/core/locales/de"; // Import German locale
 import { Button } from "@/components/ui/button"; // Import shadcn Button
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ButtonGroup } from "./ui/button-group";
-import { Separator } from "./ui/separator";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Separator } from "@/components/ui/separator";
 
 export default function BillCalendar({ trainingSlots, setFinalEvents }) {
   const currentYear = new Date().getFullYear();

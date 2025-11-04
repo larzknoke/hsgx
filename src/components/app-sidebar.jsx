@@ -8,6 +8,7 @@ import {
   UserStar,
   FileSpreadsheet,
   CakeSlice,
+  User,
 } from "lucide-react";
 
 import {
@@ -42,14 +43,19 @@ const items = [
     icon: Coins,
   },
   {
+    title: "Trainer",
+    url: "#",
+    icon: UserStar,
+  },
+  {
     title: "Teams",
     url: "#",
     icon: Users,
   },
   {
-    title: "Trainer",
+    title: "Spieler",
     url: "#",
-    icon: UserStar,
+    icon: User,
   },
   {
     title: "Verkauf",
