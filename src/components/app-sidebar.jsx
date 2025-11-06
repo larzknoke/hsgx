@@ -44,7 +44,7 @@ const items = [
   },
   {
     title: "Trainer",
-    url: "#",
+    url: "/trainer",
     icon: UserStar,
   },
   {
