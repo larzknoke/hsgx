@@ -1,3 +1,4 @@
+import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import {
   Table,
@@ -8,13 +9,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import TrainerListDropdown from "./trainerListDropdown";
 import TrainerDeleteDialog from "./trainerDeleteDialog";
+import TrainerNewDialog from "./trainerNewDialog";
+
 function TrainerTable({ dummyData }) {
   const [deleteDialogState, setDeleteDialogState] = useState({
     open: false,
     trainer: null,
   });
+  const [newDialogOpen, setNewDialogOpen] = useState(false);
 
   const openDeleteDialog = (trainer) =>
     setDeleteDialogState({ open: true, trainer });
@@ -23,6 +34,17 @@ function TrainerTable({ dummyData }) {
 
   return (
     <>
+      <div className="w-full flex flex-row gap-6 justify-between">
+        <InputGroup className="max-w-sm">
+          <InputGroupInput placeholder="Suche..." />
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton variant="secondary">Suche</InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+        <Button variant="success" onClick={() => setNewDialogOpen(true)}>
+          <PlusIcon /> Neuer Trainer
+        </Button>
+      </div>
       <Table>
         <TableCaption>Alle Abrechnungen - Update 14.10.2025</TableCaption>
         <TableHeader>
@@ -54,6 +76,10 @@ function TrainerTable({ dummyData }) {
         open={deleteDialogState.open}
         trainer={deleteDialogState.trainer}
         onClose={closeDeleteDialog}
+      />
+      <TrainerNewDialog
+        open={newDialogOpen}
+        onClose={() => setNewDialogOpen(false)}
       />
     </>
   );
