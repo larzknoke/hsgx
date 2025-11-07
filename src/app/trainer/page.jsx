@@ -1,7 +1,7 @@
-"use client";
-
-import Link from "next/link";
+import { Suspense } from "react";
 import TrainerTable from "./components/trainerTable";
+import prisma from "@/lib/prisma";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const dummyData = [
   {
@@ -21,11 +21,21 @@ const dummyData = [
   },
 ];
 
+async function getTrainers() {
+  const trainers = await prisma.trainer.findMany();
+  console.log("Fetched trainers:", trainers);
+  return trainers;
+}
+
+const trainers = await getTrainers();
+
 function Trainer() {
   return (
     <div className="flex flex-col gap-6">
       <h1>Trainer</h1>
-      <TrainerTable dummyData={dummyData} />
+      <Suspense fallback={<Skeleton />}>
+        <TrainerTable dummyData={dummyData} trainers={trainers} />
+      </Suspense>
     </div>
   );
 }

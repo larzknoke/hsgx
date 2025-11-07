@@ -1,3 +1,4 @@
+"use client";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import {
@@ -20,7 +21,7 @@ import TrainerListDropdown from "./trainerListDropdown";
 import TrainerDeleteDialog from "./trainerDeleteDialog";
 import TrainerNewDialog from "./trainerNewDialog";
 
-function TrainerTable({ dummyData }) {
+function TrainerTable({ dummyData, trainers }) {
   const [deleteDialogState, setDeleteDialogState] = useState({
     open: false,
     trainer: null,
@@ -51,21 +52,21 @@ function TrainerTable({ dummyData }) {
           <TableRow>
             <TableHead>ID</TableHead>
             <TableHead>Trainer</TableHead>
-            <TableHead>Mannschaften</TableHead>
+            {/* <TableHead>Mannschaften</TableHead> */}
             <TableHead className="text-right"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {dummyData.map((entry) => (
-            <TableRow key={entry.id}>
-              <TableCell className="font-medium">{entry.id}</TableCell>
-              <TableCell className="font-medium">{entry.trainer}</TableCell>
-              <TableCell>
-                {entry.mannschaften.map((m) => m.name).join(", ")}
-              </TableCell>
+          {trainers.map((trainer) => (
+            <TableRow key={trainer.id}>
+              <TableCell className="font-medium">{trainer.id}</TableCell>
+              <TableCell className="font-medium">{trainer.name}</TableCell>
+              {/* <TableCell>
+                {trainer.mannschaften.map((m) => m.name).join(", ")}
+              </TableCell> */}
               <TableCell className="text-right">
                 <TrainerListDropdown
-                  onDeleteClick={() => openDeleteDialog(entry)}
+                  onDeleteClick={() => openDeleteDialog(trainer)}
                 />
               </TableCell>
             </TableRow>

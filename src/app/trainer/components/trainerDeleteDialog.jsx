@@ -19,8 +19,7 @@ export default function TrainerDeleteDialog({ open, trainer, onClose }) {
         <DialogHeader>
           <DialogTitle>Trainer löschen</DialogTitle>
           <DialogDescription>
-            Möchtest du <strong>{trainer.trainer}</strong> wirklich löschen?{" "}
-            <br />
+            Möchtest du <strong>{trainer.name}</strong> wirklich löschen? <br />
             Diese Aktion kann nicht rückgängig gemacht werden.
           </DialogDescription>
         </DialogHeader>
