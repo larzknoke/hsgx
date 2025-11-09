@@ -22,8 +22,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useTransition } from "react";
+import { createTrainerAction } from "@/app/trainer/actions/create-trainer";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function TrainerNewDialog({ open, onClose }) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
   const formSchema = z.object({
     name: z.string().min(1, { message: "Bitte einen Namen eingeben" }),
   });
@@ -35,8 +42,21 @@ export default function TrainerNewDialog({ open, onClose }) {
     },
   });
 
-  function onSubmit() {
+  function onSubmit(data) {
     console.log("onSubmit", form.getValues());
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("name", data.name);
+
+      try {
+        await createTrainerAction(formData);
+        toast.success("Trainer erfolgreich erstellt");
+        form.reset();
+        onClose();
+      } catch (error) {
+        toast.error("Fehler beim Erstellen des Trainers: " + error.message);
+      }
+    });
   }
 
   function onReset() {

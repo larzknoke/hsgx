@@ -27,9 +27,8 @@ async function getTrainers() {
   return trainers;
 }
 
-const trainers = await getTrainers();
-
-function Trainer() {
+async function Trainer() {
+  const trainers = await getTrainers();
   return (
     <div className="flex flex-col gap-6">
       <h1>Trainer</h1>

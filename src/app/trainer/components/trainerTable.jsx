@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import {
@@ -22,6 +23,7 @@ import TrainerDeleteDialog from "./trainerDeleteDialog";
 import TrainerNewDialog from "./trainerNewDialog";
 
 function TrainerTable({ dummyData, trainers }) {
+  const router = useRouter();
   const [deleteDialogState, setDeleteDialogState] = useState({
     open: false,
     trainer: null,
@@ -76,11 +78,18 @@ function TrainerTable({ dummyData, trainers }) {
       <TrainerDeleteDialog
         open={deleteDialogState.open}
         trainer={deleteDialogState.trainer}
-        onClose={closeDeleteDialog}
+        onClose={() => {
+          setDeleteDialogState({ open: false, trainer: null });
+          // ✅ refresh nach erfolgreichem Delete
+          router.refresh();
+        }}
       />
       <TrainerNewDialog
         open={newDialogOpen}
-        onClose={() => setNewDialogOpen(false)}
+        onClose={() => {
+          setNewDialogOpen(false);
+          router.refresh();
+        }}
       />
     </>
   );

@@ -5,38 +5,46 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useTransition } from "react";
+import { toast } from "sonner";
+import { deleteTrainerAction } from "@/app/trainer/actions/delete-trainer";
 
-export default function TrainerDeleteDialog({ open, trainer, onClose }) {
-  if (!trainer) return null;
+export default function TrainerDeleteDialog({ open, onClose, trainer }) {
+  const [isPending, startTransition] = useTransition();
+
+  if (!trainer) return null; // Sicherheit: kein Trainer ausgewählt
+
+  function onDelete() {
+    startTransition(async () => {
+      try {
+        await deleteTrainerAction(trainer.id);
+        toast.success(`Trainer ${trainer.name} gelöscht`);
+        onClose(); // Parent übernimmt refresh
+      } catch (err) {
+        toast.error(err.message || "Fehler beim Löschen");
+      }
+    });
+  }
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Trainer löschen</DialogTitle>
-          <DialogDescription>
-            Möchtest du <strong>{trainer.name}</strong> wirklich löschen? <br />
-            Diese Aktion kann nicht rückgängig gemacht werden.
-          </DialogDescription>
+          <DialogTitle>Löschen bestätigen</DialogTitle>
         </DialogHeader>
-
-        <DialogFooter>
+        <p>
+          Möchtest du den Trainer <strong>{trainer.name}</strong> wirklich
+          löschen?
+        </p>
+        <DialogFooter className="mt-4 flex justify-end gap-2">
           <Button variant="outline" onClick={onClose}>
             Abbrechen
           </Button>
-          <Button
-            variant="destructive"
-            onClick={() => {
-              console.log("Deleting trainer:", trainer.id);
-              // TODO: API-Call hier einbauen
-              onClose();
-            }}
-          >
-            Löschen
+          <Button variant="destructive" onClick={onDelete} disabled={isPending}>
+            {isPending ? "Löschen..." : "Löschen"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -5,6 +5,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Sigma } from "lucide-react";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default async function RootLayout({ children }) {
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <AppSidebar />
+          <Toaster />
           <main className="flex flex-1 flex-col p-6  bg-gray-50/20">
             {/* <SidebarTrigger /> */}
             {children}
