@@ -29,6 +29,7 @@ function PlayerTable({ players, teams }) {
     player: null,
   });
   const [newDialogOpen, setNewDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const openDeleteDialog = (player) =>
     setDeleteDialogState({ open: true, player });
@@ -40,13 +41,26 @@ function PlayerTable({ players, teams }) {
     return new Date(date).toLocaleDateString("de-DE");
   };
 
+  const filteredPlayers = players.filter((player) =>
+    player.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <div className="w-full flex flex-row gap-6 justify-between">
         <InputGroup className="max-w-sm">
-          <InputGroupInput placeholder="Suche..." />
+          <InputGroupInput
+            placeholder="Suche..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           <InputGroupAddon align="inline-end">
-            <InputGroupButton variant="secondary">Suche</InputGroupButton>
+            <InputGroupButton
+              variant="secondary"
+              onClick={() => setSearchTerm("")}
+            >
+              {searchTerm ? "Zurücksetzen" : "Suche"}
+            </InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
         <Button variant="success" onClick={() => setNewDialogOpen(true)}>
@@ -66,7 +80,7 @@ function PlayerTable({ players, teams }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {players.map((player) => (
+          {filteredPlayers.map((player) => (
             <TableRow key={player.id}>
               <TableCell className="font-medium">{player.id}</TableCell>
               <TableCell className="font-medium">{player.name}</TableCell>
