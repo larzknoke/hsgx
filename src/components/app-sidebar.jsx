@@ -49,12 +49,12 @@ const items = [
   },
   {
     title: "Teams",
-    url: "#",
+    url: "/team",
     icon: Users,
   },
   {
     title: "Spieler",
-    url: "#",
+    url: "/player",
     icon: User,
   },
   {

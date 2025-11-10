@@ -21,4 +21,48 @@ model Trainer {
   name        String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  trainerTeams TrainerTeamRelation[]
+}
+
+model Team {
+  id          Int                  @id @default(autoincrement())
+  name        String
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  trainerTeams TrainerTeamRelation[]
+  playerTeams PlayerTeamRelation[]
+}
+
+model Player {
+  id          Int      @id @default(autoincrement())
+  name        String
+  birthday    DateTime?
+  gender      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  playerTeams PlayerTeamRelation[]
+}
+
+model TrainerTeamRelation {
+  id        Int      @id @default(autoincrement())
+  trainerId Int
+  teamId    Int
+  trainer   Trainer  @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([trainerId, teamId])
+}
+
+model PlayerTeamRelation {
+  id        Int      @id @default(autoincrement())
+  playerId  Int
+  teamId    Int
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([playerId, teamId])
 }

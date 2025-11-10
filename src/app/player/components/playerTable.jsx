@@ -1,0 +1,107 @@
+"use client";
+import { useRouter } from "next/navigation";
+import { PlusIcon } from "lucide-react";
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import PlayerListDropdown from "./playerListDropdown";
+import PlayerDeleteDialog from "./playerDeleteDialog";
+import PlayerNewDialog from "./playerNewDialog";
+
+function PlayerTable({ players, teams }) {
+  const router = useRouter();
+  const [deleteDialogState, setDeleteDialogState] = useState({
+    open: false,
+    player: null,
+  });
+  const [newDialogOpen, setNewDialogOpen] = useState(false);
+
+  const openDeleteDialog = (player) =>
+    setDeleteDialogState({ open: true, player });
+  const closeDeleteDialog = () =>
+    setDeleteDialogState({ open: false, player: null });
+
+  const formatDate = (date) => {
+    if (!date) return "-";
+    return new Date(date).toLocaleDateString("de-DE");
+  };
+
+  return (
+    <>
+      <div className="w-full flex flex-row gap-6 justify-between">
+        <InputGroup className="max-w-sm">
+          <InputGroupInput placeholder="Suche..." />
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton variant="secondary">Suche</InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+        <Button variant="success" onClick={() => setNewDialogOpen(true)}>
+          <PlusIcon /> Neuer Spieler
+        </Button>
+      </div>
+      <Table>
+        <TableCaption>Alle Spieler</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Geburtstag</TableHead>
+            <TableHead>Geschlecht</TableHead>
+            <TableHead>Teams</TableHead>
+            <TableHead className="text-right"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {players.map((player) => (
+            <TableRow key={player.id}>
+              <TableCell className="font-medium">{player.id}</TableCell>
+              <TableCell className="font-medium">{player.name}</TableCell>
+              <TableCell>{formatDate(player.birthday)}</TableCell>
+              <TableCell>{player.gender || "-"}</TableCell>
+              <TableCell>
+                {player.playerTeams.map((pt) => pt.team.name).join(", ")}
+              </TableCell>
+              <TableCell className="text-right">
+                <PlayerListDropdown
+                  onDeleteClick={() => openDeleteDialog(player)}
+                />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <PlayerDeleteDialog
+        open={deleteDialogState.open}
+        player={deleteDialogState.player}
+        onClose={() => {
+          setDeleteDialogState({ open: false, player: null });
+          router.refresh();
+        }}
+      />
+      <PlayerNewDialog
+        open={newDialogOpen}
+        teams={teams}
+        onClose={() => {
+          setNewDialogOpen(false);
+          router.refresh();
+        }}
+      />
+    </>
+  );
+}
+
+export default PlayerTable;
