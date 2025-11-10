@@ -21,10 +21,15 @@ import {
 import TrainerListDropdown from "./trainerListDropdown";
 import TrainerDeleteDialog from "./trainerDeleteDialog";
 import TrainerNewDialog from "./trainerNewDialog";
+import TrainerEditDialog from "./trainerEditDialog";
 
-function TrainerTable({ dummyData, trainers }) {
+function TrainerTable({ trainers }) {
   const router = useRouter();
   const [deleteDialogState, setDeleteDialogState] = useState({
+    open: false,
+    trainer: null,
+  });
+  const [editDialogState, setEditDialogState] = useState({
     open: false,
     trainer: null,
   });
@@ -34,6 +39,11 @@ function TrainerTable({ dummyData, trainers }) {
     setDeleteDialogState({ open: true, trainer });
   const closeDeleteDialog = () =>
     setDeleteDialogState({ open: false, trainer: null });
+
+  const openEditDialog = (trainer) =>
+    setEditDialogState({ open: true, trainer });
+  const closeEditDialog = () =>
+    setEditDialogState({ open: false, trainer: null });
 
   return (
     <>
@@ -54,7 +64,7 @@ function TrainerTable({ dummyData, trainers }) {
           <TableRow>
             <TableHead>ID</TableHead>
             <TableHead>Trainer</TableHead>
-            {/* <TableHead>Mannschaften</TableHead> */}
+            <TableHead>Teams</TableHead>
             <TableHead className="text-right"></TableHead>
           </TableRow>
         </TableHeader>
@@ -63,12 +73,14 @@ function TrainerTable({ dummyData, trainers }) {
             <TableRow key={trainer.id}>
               <TableCell className="font-medium">{trainer.id}</TableCell>
               <TableCell className="font-medium">{trainer.name}</TableCell>
-              {/* <TableCell>
-                {trainer.mannschaften.map((m) => m.name).join(", ")}
-              </TableCell> */}
+              <TableCell>
+                {trainer.trainerTeams?.map((tt) => tt.team.name).join(", ") ||
+                  "-"}
+              </TableCell>
               <TableCell className="text-right">
                 <TrainerListDropdown
                   onDeleteClick={() => openDeleteDialog(trainer)}
+                  onEditClick={() => openEditDialog(trainer)}
                 />
               </TableCell>
             </TableRow>
@@ -81,6 +93,14 @@ function TrainerTable({ dummyData, trainers }) {
         onClose={() => {
           setDeleteDialogState({ open: false, trainer: null });
           // ✅ refresh nach erfolgreichem Delete
+          router.refresh();
+        }}
+      />
+      <TrainerEditDialog
+        open={editDialogState.open}
+        trainer={editDialogState.trainer}
+        onClose={() => {
+          setEditDialogState({ open: false, trainer: null });
           router.refresh();
         }}
       />

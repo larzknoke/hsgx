@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-function TrainerListDropdown({ onDeleteClick }) {
+function TrainerListDropdown({ onDeleteClick, onEditClick }) {
   return (
     <>
       <DropdownMenu>
@@ -32,7 +32,9 @@ function TrainerListDropdown({ onDeleteClick }) {
         <DropdownMenuContent className="w-40" align="end">
           {/* <DropdownMenuLabel>File Actions</DropdownMenuLabel> */}
           <DropdownMenuGroup>
-            <DropdownMenuItem>Bearbeiten</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onEditClick()}>
+              Bearbeiten
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onDeleteClick(true)}
               variant="destructive"

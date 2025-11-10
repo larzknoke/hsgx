@@ -21,10 +21,15 @@ import {
 import TeamListDropdown from "./teamListDropdown";
 import TeamDeleteDialog from "./teamDeleteDialog";
 import TeamNewDialog from "./teamNewDialog";
+import TeamEditDialog from "./teamEditDialog";
 
 function TeamTable({ teams, trainers }) {
   const router = useRouter();
   const [deleteDialogState, setDeleteDialogState] = useState({
+    open: false,
+    team: null,
+  });
+  const [editDialogState, setEditDialogState] = useState({
     open: false,
     team: null,
   });
@@ -33,6 +38,9 @@ function TeamTable({ teams, trainers }) {
   const openDeleteDialog = (team) => setDeleteDialogState({ open: true, team });
   const closeDeleteDialog = () =>
     setDeleteDialogState({ open: false, team: null });
+
+  const openEditDialog = (team) => setEditDialogState({ open: true, team });
+  const closeEditDialog = () => setEditDialogState({ open: false, team: null });
 
   return (
     <>
@@ -68,6 +76,7 @@ function TeamTable({ teams, trainers }) {
               <TableCell className="text-right">
                 <TeamListDropdown
                   onDeleteClick={() => openDeleteDialog(team)}
+                  onEditClick={() => openEditDialog(team)}
                 />
               </TableCell>
             </TableRow>
@@ -79,6 +88,15 @@ function TeamTable({ teams, trainers }) {
         team={deleteDialogState.team}
         onClose={() => {
           setDeleteDialogState({ open: false, team: null });
+          router.refresh();
+        }}
+      />
+      <TeamEditDialog
+        open={editDialogState.open}
+        team={editDialogState.team}
+        trainers={trainers}
+        onClose={() => {
+          setEditDialogState({ open: false, team: null });
           router.refresh();
         }}
       />
