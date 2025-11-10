@@ -25,7 +25,7 @@ import BillCalendar from "./bill-calendar";
 import { Button } from "@/components/ui/button";
 import SummaryDialog from "./summary-dialog";
 
-export default function BillForm() {
+export default function BillForm({ trainers }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState(false);
   const [trainingSlots, setTrainingSlots] = useState([]);
@@ -117,17 +117,14 @@ export default function BillForm() {
                                   <SelectValue placeholder="Überungsleiter auswählen..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem key="user_1" value="user_1">
-                                    Johannes Wellmann
-                                  </SelectItem>
-
-                                  <SelectItem key="user_2" value="user_2">
-                                    Lars Knoke
-                                  </SelectItem>
-
-                                  <SelectItem key="user_3" value="user_3">
-                                    Kirsten Gronstedt
-                                  </SelectItem>
+                                  {trainers.map((trainer) => (
+                                    <SelectItem
+                                      key={trainer.id}
+                                      value={trainer.id.toString()}
+                                    >
+                                      {trainer.name}
+                                    </SelectItem>
+                                  ))}
                                 </SelectContent>
                               </Select>
                             </FormControl>

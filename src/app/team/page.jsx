@@ -11,6 +11,11 @@ async function getTeams() {
           trainer: true,
         },
       },
+      playerTeams: {
+        include: {
+          player: true,
+        },
+      },
     },
   });
   console.log("Fetched teams:", teams);

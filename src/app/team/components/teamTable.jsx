@@ -62,6 +62,7 @@ function TeamTable({ teams, trainers }) {
             <TableHead>ID</TableHead>
             <TableHead>Team</TableHead>
             <TableHead>Trainer</TableHead>
+            <TableHead>Spieler</TableHead>
             <TableHead className="text-right"></TableHead>
           </TableRow>
         </TableHeader>
@@ -73,6 +74,7 @@ function TeamTable({ teams, trainers }) {
               <TableCell>
                 {team.trainerTeams.map((tt) => tt.trainer.name).join(", ")}
               </TableCell>
+              <TableCell>{team.playerTeams?.length || 0}</TableCell>
               <TableCell className="text-right">
                 <TeamListDropdown
                   onDeleteClick={() => openDeleteDialog(team)}
