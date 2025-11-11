@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { set, z } from "zod";
-import { useForm } from "react-hook-form";
+import { get, useForm } from "react-hook-form";
 import {
   Select,
   SelectTrigger,
@@ -24,8 +24,13 @@ import TrainingSlots from "@/app/(bill)/abrechnung/neu/components/training-slots
 import BillCalendar from "./bill-calendar";
 import { Button } from "@/components/ui/button";
 import SummaryDialog from "./summary-dialog";
+import {
+  getTrainerLicenseLabel,
+  getTrainerHourlyRate,
+} from "@/lib/trainerentgelte";
+import { formatCurrency } from "@/lib/utils";
 
-export default function BillForm({ trainers }) {
+export default function BillForm({ trainers, teams }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState(false);
   const [trainingSlots, setTrainingSlots] = useState([]);
@@ -120,7 +125,16 @@ export default function BillForm({ trainers }) {
                                       key={trainer.id}
                                       value={trainer.id.toString()}
                                     >
-                                      {trainer.name}
+                                      {trainer.name}{" "}
+                                      {trainer.licenseType
+                                        ? `(${getTrainerLicenseLabel(
+                                            trainer.licenseType
+                                          )} - ${formatCurrency(
+                                            getTrainerHourlyRate(
+                                              trainer.licenseType
+                                            )
+                                          )})`
+                                        : ""}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -154,21 +168,14 @@ export default function BillForm({ trainers }) {
                                   <SelectValue placeholder="Mannschaft auswählen..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem key="mD" value="mD">
-                                    männlich D
-                                  </SelectItem>
-
-                                  <SelectItem key="wC" value="wC">
-                                    weiblich C
-                                  </SelectItem>
-
-                                  <SelectItem key="herren1" value="herren1">
-                                    Herren 1
-                                  </SelectItem>
-
-                                  <SelectItem key="Herren2" value="Herren2">
-                                    Herren 2
-                                  </SelectItem>
+                                  {teams.map((team) => (
+                                    <SelectItem
+                                      key={team.id}
+                                      value={team.id.toString()}
+                                    >
+                                      {team.name}
+                                    </SelectItem>
+                                  ))}
                                 </SelectContent>
                               </Select>
                             </FormControl>

@@ -33,6 +33,7 @@ import { useTransition } from "react";
 import { createTrainerAction } from "@/app/trainer/actions/create-trainer";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { TRAINER_LICENSE_TYPES } from "@/lib/trainerentgelte";
 
 export default function TrainerNewDialog({ open, onClose }) {
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function TrainerNewDialog({ open, onClose }) {
   const formSchema = z.object({
     name: z.string().min(1, { message: "Bitte einen Namen eingeben" }),
     stammverein: z.string().optional(),
+    licenseType: z.string().optional(),
   });
 
   const form = useForm({
@@ -48,6 +50,7 @@ export default function TrainerNewDialog({ open, onClose }) {
     defaultValues: {
       name: "",
       stammverein: "",
+      licenseType: "",
     },
   });
 
@@ -57,6 +60,7 @@ export default function TrainerNewDialog({ open, onClose }) {
       const formData = new FormData();
       formData.append("name", data.name);
       if (data.stammverein) formData.append("stammverein", data.stammverein);
+      if (data.licenseType) formData.append("licenseType", data.licenseType);
 
       try {
         await createTrainerAction(formData);
@@ -140,6 +144,43 @@ export default function TrainerNewDialog({ open, onClose }) {
                             <SelectItem value="MTV Bevern">
                               MTV Bevern
                             </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="licenseType"
+                render={({ field }) => (
+                  <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                    <FormLabel className="flex shrink-0">
+                      Lizenz / Rolle
+                    </FormLabel>
+
+                    <div className="w-full">
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Lizenz auswählen..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(TRAINER_LICENSE_TYPES).map(
+                              ([key, value]) => (
+                                <SelectItem key={key} value={key}>
+                                  {value.label} ({value.hourlyRate.toFixed(2)}{" "}
+                                  €/h)
+                                </SelectItem>
+                              )
+                            )}
                           </SelectContent>
                         </Select>
                       </FormControl>

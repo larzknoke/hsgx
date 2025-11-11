@@ -22,6 +22,10 @@ import TrainerListDropdown from "./trainerListDropdown";
 import TrainerDeleteDialog from "./trainerDeleteDialog";
 import TrainerNewDialog from "./trainerNewDialog";
 import TrainerEditDialog from "./trainerEditDialog";
+import {
+  getTrainerLicenseLabel,
+  getTrainerHourlyRate,
+} from "@/lib/trainerentgelte";
 
 function TrainerTable({ trainers }) {
   const router = useRouter();
@@ -66,6 +70,8 @@ function TrainerTable({ trainers }) {
             <TableHead>Trainer</TableHead>
             <TableHead>Teams</TableHead>
             <TableHead>Stammverein</TableHead>
+            <TableHead>Lizenz</TableHead>
+            <TableHead>€/h</TableHead>
             <TableHead className="text-right"></TableHead>
           </TableRow>
         </TableHeader>
@@ -79,6 +85,14 @@ function TrainerTable({ trainers }) {
                   "-"}
               </TableCell>
               <TableCell>{trainer.stammverein || "-"}</TableCell>
+              <TableCell>
+                {getTrainerLicenseLabel(trainer.licenseType)}
+              </TableCell>
+              <TableCell>
+                {trainer.licenseType
+                  ? `${getTrainerHourlyRate(trainer.licenseType).toFixed(2)} €`
+                  : "-"}
+              </TableCell>
               <TableCell className="text-right">
                 <TrainerListDropdown
                   onDeleteClick={() => openDeleteDialog(trainer)}

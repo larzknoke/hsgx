@@ -8,6 +8,7 @@ const schema = z.object({
   id: z.number(),
   name: z.string().min(1, "Name ist erforderlich"),
   stammverein: z.string().optional(),
+  licenseType: z.string().optional(),
 });
 
 export async function updateTrainerAction(formData) {
@@ -18,6 +19,7 @@ export async function updateTrainerAction(formData) {
     id: parseInt(data.id),
     name: data.name,
     stammverein: data.stammverein || undefined,
+    licenseType: data.licenseType || undefined,
   });
 
   if (!parsed.success) {
@@ -29,6 +31,7 @@ export async function updateTrainerAction(formData) {
     data: {
       name: parsed.data.name,
       stammverein: parsed.data.stammverein || null,
+      licenseType: parsed.data.licenseType || null,
     },
   });
 

@@ -20,6 +20,7 @@ model Trainer {
   id          Int      @id @default(autoincrement())
   name        String
   stammverein String?
+  licenseType String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   trainerTeams TrainerTeamRelation[]

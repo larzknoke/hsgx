@@ -7,6 +7,7 @@ import prisma from "@/lib/prisma";
 const schema = z.object({
   name: z.string().min(1, "Name ist erforderlich"),
   stammverein: z.string().optional(),
+  licenseType: z.string().optional(),
 });
 
 export async function createTrainerAction(formData) {
@@ -22,6 +23,7 @@ export async function createTrainerAction(formData) {
     data: {
       name: parsed.data.name,
       stammverein: parsed.data.stammverein || null,
+      licenseType: parsed.data.licenseType || null,
     },
   });
 
