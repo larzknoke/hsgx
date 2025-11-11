@@ -7,6 +7,7 @@ import prisma from "@/lib/prisma";
 const schema = z.object({
   id: z.number(),
   name: z.string().min(1, "Name ist erforderlich"),
+  stammverein: z.string().optional(),
 });
 
 export async function updateTrainerAction(formData) {
@@ -16,6 +17,7 @@ export async function updateTrainerAction(formData) {
   const parsed = schema.safeParse({
     id: parseInt(data.id),
     name: data.name,
+    stammverein: data.stammverein || undefined,
   });
 
   if (!parsed.success) {
@@ -26,6 +28,7 @@ export async function updateTrainerAction(formData) {
     where: { id: parsed.data.id },
     data: {
       name: parsed.data.name,
+      stammverein: parsed.data.stammverein || null,
     },
   });
 

@@ -21,6 +21,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useEffect } from "react";
 import { useTransition } from "react";
 import { updateTrainerAction } from "@/app/trainer/actions/update-trainer";
@@ -33,12 +40,14 @@ export default function TrainerEditDialog({ open, onClose, trainer }) {
 
   const formSchema = z.object({
     name: z.string().min(1, { message: "Bitte einen Namen eingeben" }),
+    stammverein: z.string().optional(),
   });
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      stammverein: "",
     },
   });
 
@@ -47,6 +56,7 @@ export default function TrainerEditDialog({ open, onClose, trainer }) {
     if (trainer) {
       form.reset({
         name: trainer.name || "",
+        stammverein: trainer.stammverein || "",
       });
     }
   }, [trainer, form]);
@@ -58,6 +68,7 @@ export default function TrainerEditDialog({ open, onClose, trainer }) {
       const formData = new FormData();
       formData.append("id", trainer.id.toString());
       formData.append("name", data.name);
+      if (data.stammverein) formData.append("stammverein", data.stammverein);
 
       try {
         await updateTrainerAction(formData);
@@ -73,6 +84,7 @@ export default function TrainerEditDialog({ open, onClose, trainer }) {
     if (trainer) {
       form.reset({
         name: trainer.name || "",
+        stammverein: trainer.stammverein || "",
       });
     }
   }
@@ -108,6 +120,42 @@ export default function TrainerEditDialog({ open, onClose, trainer }) {
                             {...field}
                           />
                         </div>
+                      </FormControl>
+
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="stammverein"
+                render={({ field }) => (
+                  <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                    <FormLabel className="flex shrink-0">Stammverein</FormLabel>
+
+                    <div className="w-full">
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Stammverein auswählen..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="MTV Holzminden">
+                              MTV Holzminden
+                            </SelectItem>
+                            <SelectItem value="TV Stadtoldendorf">
+                              TV Stadtoldendorf
+                            </SelectItem>
+                            <SelectItem value="MTV Bevern">
+                              MTV Bevern
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
 
                       <FormMessage />

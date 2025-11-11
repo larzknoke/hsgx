@@ -33,7 +33,6 @@ export default function BillForm({ trainers }) {
 
   const formSchema = z.object({
     // trainer: z.string().min(1, { message: "This field is required" }),
-    // stammverein: z.string().min(1, { message: "This field is required" }),
     // mannschaft: z.string().min(1, { message: "This field is required" }),
     // iban: z.string(),
   });
@@ -42,7 +41,6 @@ export default function BillForm({ trainers }) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       trainer: "",
-      stammverein: "",
       mannschaft: "",
       iban: "",
     },
@@ -125,48 +123,6 @@ export default function BillForm({ trainers }) {
                                       {trainer.name}
                                     </SelectItem>
                                   ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="stammverein"
-                      render={({ field }) => (
-                        <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
-                          <FormLabel className="flex shrink-0">
-                            Stammverein
-                          </FormLabel>
-
-                          <div className="w-full">
-                            <FormControl>
-                              <Select
-                                key="select-0-1"
-                                id="stammverein"
-                                className=""
-                                {...field}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger className="w-full ">
-                                  <SelectValue placeholder="Stammverein auswählen..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem key="hol" value="hol">
-                                    MTV Holzminden
-                                  </SelectItem>
-
-                                  <SelectItem key="sdorf" value="sdorf">
-                                    TV Stadtoldendorf
-                                  </SelectItem>
-
-                                  <SelectItem key="bevern" value="bevern">
-                                    MTV Bevern
-                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>

@@ -65,6 +65,7 @@ function TrainerTable({ trainers }) {
             <TableHead>ID</TableHead>
             <TableHead>Trainer</TableHead>
             <TableHead>Teams</TableHead>
+            <TableHead>Stammverein</TableHead>
             <TableHead className="text-right"></TableHead>
           </TableRow>
         </TableHeader>
@@ -77,6 +78,7 @@ function TrainerTable({ trainers }) {
                 {trainer.trainerTeams?.map((tt) => tt.team.name).join(", ") ||
                   "-"}
               </TableCell>
+              <TableCell>{trainer.stammverein || "-"}</TableCell>
               <TableCell className="text-right">
                 <TrainerListDropdown
                   onDeleteClick={() => openDeleteDialog(trainer)}
