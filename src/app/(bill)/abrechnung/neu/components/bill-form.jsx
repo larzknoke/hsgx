@@ -249,6 +249,8 @@ export default function BillForm({ trainers, teams }) {
         onClose={() => setDialogData(false)}
         formData={form.getValues()} // Pass form data
         finalEvents={finalEvents} // Pass final events
+        trainers={trainers} // Pass trainers
+        teams={teams} // Pass teams
       />
     </>
   );
