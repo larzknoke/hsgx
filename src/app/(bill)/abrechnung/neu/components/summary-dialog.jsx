@@ -13,33 +13,23 @@ export default function SummaryDialog({
   onClose,
   formData,
   finalEvents,
+  trainers,
+  teams,
 }) {
-  const trainerOptions = {
-    user_1: "Johannes Wellmann",
-    user_2: "Lars Knoke",
-    user_3: "Kirsten Gronstedt",
-  };
-
-  const stammvereinOptions = {
-    hol: "MTV Holzminden",
-    sdorf: "TV Stadtoldendorf",
-    bevern: "MTV Bevern",
-  };
-
-  const mannschaftOptions = {
-    mD: "männlich D",
-    wC: "weiblich C",
-    herren1: "Herren 1",
-    herren2: "Herren 2",
-  };
+  // Find trainer and team by ID
+  const selectedTrainer = trainers?.find(
+    (t) => t.id.toString() === formData.trainer
+  );
+  const selectedTeam = teams?.find(
+    (t) => t.id.toString() === formData.mannschaft
+  );
 
   // Map formData to use label values
   const mappedFormData = {
-    ...formData,
-    trainer: trainerOptions[formData.trainer] || formData.trainer,
-    stammverein:
-      stammvereinOptions[formData.stammverein] || formData.stammverein,
-    mannschaft: mannschaftOptions[formData.mannschaft] || formData.mannschaft,
+    trainer: selectedTrainer?.name || formData.trainer || "-",
+    stammverein: selectedTrainer?.stammverein || "-",
+    mannschaft: selectedTeam?.name || formData.mannschaft || "-",
+    iban: formData.iban || "-",
   };
 
   // Group events by location
