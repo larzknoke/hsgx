@@ -62,6 +62,7 @@ export default function BillForm({ trainers, teams }) {
 
   function onSubmit() {
     console.log("onSubmit", form.getValues());
+    // Open the summary dialog instead of submitting
     setDialogData(true);
   }
 

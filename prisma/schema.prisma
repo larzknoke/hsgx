@@ -24,6 +24,8 @@ model Trainer {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   trainerTeams TrainerTeamRelation[]
+
+  bills Bill[]
 }
 
 model Team {
@@ -33,6 +35,8 @@ model Team {
   updatedAt   DateTime             @updatedAt
   trainerTeams TrainerTeamRelation[]
   playerTeams PlayerTeamRelation[]
+
+  bills Bill[]
 }
 
 model Player {
@@ -43,6 +47,50 @@ model Player {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   playerTeams PlayerTeamRelation[]
+}
+
+model Bill {
+  id          Int       @id @default(autoincrement())
+  trainerId   Int
+  teamId      Int
+  iban        String?
+  quarter     Int       // 1..4
+  year        Int
+  // Pricing snapshot at bill level (optional):
+  // If you want the whole bill to use one rate:
+  hourlyRate  Decimal?  @db.Decimal(10, 2)
+
+  totalCost   Decimal   @db.Decimal(10, 2)
+  status      String    @default("draft") // draft, submitted, paid
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  trainer     Trainer   @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  events      BillEvent[]
+
+  @@unique([trainerId, teamId, quarter, year])
+}
+
+model BillEvent {
+  id            Int       @id @default(autoincrement())
+  billId        Int
+  location      String    // e.g. "bbs" | "liebig" | "billerbeck" (you can formalize with an enum)
+  startDate     DateTime  // full ISO datetime
+  endDate       DateTime  // full ISO datetime
+  durationHours Decimal   @db.Decimal(6, 2) // cached duration in hours for quick sums
+  // Pricing snapshot at event level (optional):
+  hourlyRate    Decimal?  @db.Decimal(10, 2) // use if rates can differ per event or change mid-quarter
+  cost          Decimal   @db.Decimal(10, 2) // durationHours * (hourlyRate from bill or per-event)
+
+  canceled      Boolean   @default(false)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  bill          Bill      @relation(fields: [billId], references: [id], onDelete: Cascade)
+
+  @@index([billId, startDate])
 }
 
 model TrainerTeamRelation {

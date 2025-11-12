@@ -7,6 +7,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
+import { createBillAction } from "../actions/create-bill";
+import { getTrainerHourlyRate } from "@/lib/trainerentgelte";
+import { formatCurrency } from "@/lib/utils";
 
 export default function SummaryDialog({
   isOpen,
@@ -16,6 +20,8 @@ export default function SummaryDialog({
   trainers,
   teams,
 }) {
+  const [isSaving, setIsSaving] = useState(false);
+
   // Find trainer and team by ID
   const selectedTrainer = trainers?.find(
     (t) => t.id.toString() === formData.trainer
@@ -33,11 +39,15 @@ export default function SummaryDialog({
   };
 
   // Group events by location
+  const hourlyRate = selectedTrainer?.licenseType 
+    ? getTrainerHourlyRate(selectedTrainer.licenseType)
+    : 0;
+
   const groupedEvents = finalEvents.reduce((acc, event) => {
     const start = new Date(event.start);
     const end = new Date(event.end);
     const durationInHours = (end - start) / (1000 * 60 * 60); // Convert milliseconds to hours
-    const cost = durationInHours * 5; // 5€ per hour
+    const cost = durationInHours * hourlyRate;
 
     if (!acc[event.location]) {
       acc[event.location] = { count: 0, totalHours: 0, totalCost: 0 };
@@ -55,6 +65,66 @@ export default function SummaryDialog({
     (sum, group) => sum + group.totalCost,
     0
   );
+
+  const handleSave = async () => {
+    setIsSaving(true);
+
+    try {
+      // Extract quarter and year from first event
+      const firstEventDate = new Date(finalEvents[0].start);
+      const quarter = Math.floor(firstEventDate.getMonth() / 3) + 1; // 1-4
+      const year = firstEventDate.getFullYear();
+
+      // Parse trainer and team IDs
+      const trainerId = parseInt(formData.trainer);
+      const teamId = parseInt(formData.mannschaft);
+
+      // Map finalEvents to BillEvent structure
+      const events = finalEvents.map((event) => {
+        const start = new Date(event.start);
+        const end = new Date(event.end);
+        const durationInHours = (end - start) / (1000 * 60 * 60);
+        const eventCost = durationInHours * hourlyRate;
+
+        return {
+          location: event.location,
+          startDate: start,
+          endDate: end,
+          durationHours: durationInHours,
+          hourlyRate: hourlyRate,
+          cost: eventCost,
+          canceled: false,
+        };
+      });
+
+      // Prepare bill data
+      const billData = {
+        trainerId,
+        teamId,
+        iban: formData.iban || null,
+        quarter,
+        year,
+        hourlyRate,
+        totalCost,
+        events,
+      };
+
+      // Call server action
+      const result = await createBillAction(billData);
+
+      if (result.success) {
+        alert("Abrechnung erfolgreich gespeichert!");
+        onClose();
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error("Error saving bill:", error);
+      alert("Fehler beim Speichern der Abrechnung: " + error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -113,7 +183,7 @@ export default function SummaryDialog({
                         {group.totalHours.toFixed(2)}
                       </td>
                       <td className="border-b border-gray-300 px-4 py-2 text-right">
-                        {group.totalCost.toFixed(2)}€
+                        {formatCurrency(group.totalCost)}
                       </td>
                     </tr>
                   )
@@ -124,15 +194,15 @@ export default function SummaryDialog({
 
           {/* Total Costs */}
           <div className="text-right font-bold">
-            Gesamtkosten: {totalCost.toFixed(2)}€
+            Gesamtkosten: {formatCurrency(totalCost)}
           </div>
         </div>
         <DialogFooter>
-          <Button variant={"outline"} onClick={onClose}>
+          <Button variant={"outline"} onClick={onClose} disabled={isSaving}>
             Abbrechen
           </Button>
-          <Button onClick={onClose} variant={"success"}>
-            Speichern
+          <Button onClick={handleSave} variant={"success"} disabled={isSaving}>
+            {isSaving ? "Speichern..." : "Abrechnung speichern"}
           </Button>
         </DialogFooter>
       </DialogContent>
