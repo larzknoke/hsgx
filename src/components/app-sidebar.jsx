@@ -61,11 +61,13 @@ const items = [
     title: "Verkauf",
     url: "#",
     icon: CakeSlice,
+    disabled: true,
   },
   {
     title: "Protokolle",
     url: "#",
     icon: FileSpreadsheet,
+    disabled: true,
   },
 ];
 
@@ -96,7 +98,12 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <a
+                      href={item.url}
+                      className={
+                        item.disabled ? "pointer-events-none opacity-30" : ""
+                      }
+                    >
                       <item.icon />
                       <span>{item.title}</span>
                     </a>
