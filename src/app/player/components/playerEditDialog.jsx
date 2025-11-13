@@ -192,7 +192,7 @@ export default function PlayerEditDialog({ open, onClose, teams, player }) {
                           onValueChange={field.onChange}
                           value={field.value}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Auswählen..." />
                           </SelectTrigger>
                           <SelectContent>
