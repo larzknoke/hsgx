@@ -22,6 +22,7 @@ import TeamListDropdown from "./teamListDropdown";
 import TeamDeleteDialog from "./teamDeleteDialog";
 import TeamNewDialog from "./teamNewDialog";
 import TeamEditDialog from "./teamEditDialog";
+import TeamDetailsDialog from "./teamDetailsDialog";
 
 function TeamTable({ teams, trainers }) {
   const router = useRouter();
@@ -34,6 +35,22 @@ function TeamTable({ teams, trainers }) {
     team: null,
   });
   const [newDialogOpen, setNewDialogOpen] = useState(false);
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+
+  const handleRowClick = (teamId, event) => {
+    // Don't open details dialog if clicking on dropdown menu
+    if (event.target.closest('[role="button"]')) {
+      return;
+    }
+    setSelectedTeamId(teamId);
+    setDetailsDialogOpen(true);
+  };
+
+  const handleCloseDetailsDialog = () => {
+    setDetailsDialogOpen(false);
+    setSelectedTeamId(null);
+  };
 
   const openDeleteDialog = (team) => setDeleteDialogState({ open: true, team });
   const closeDeleteDialog = () =>
@@ -68,7 +85,11 @@ function TeamTable({ teams, trainers }) {
         </TableHeader>
         <TableBody>
           {teams.map((team) => (
-            <TableRow key={team.id}>
+            <TableRow
+              key={team.id}
+              className="cursor-pointer hover:bg-gray-50"
+              onClick={(e) => handleRowClick(team.id, e)}
+            >
               <TableCell className="font-medium">{team.id}</TableCell>
               <TableCell className="font-medium">{team.name}</TableCell>
               <TableCell>
@@ -85,6 +106,14 @@ function TeamTable({ teams, trainers }) {
           ))}
         </TableBody>
       </Table>
+
+      {/* Team Details Dialog */}
+      <TeamDetailsDialog
+        isOpen={detailsDialogOpen}
+        onClose={handleCloseDetailsDialog}
+        teamId={selectedTeamId}
+      />
+
       <TeamDeleteDialog
         open={deleteDialogState.open}
         team={deleteDialogState.team}

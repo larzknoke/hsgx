@@ -1,0 +1,221 @@
+"use client";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { useState, useEffect } from "react";
+import { getTeamDetailsAction } from "../actions/get-team-details";
+import { getTrainerLicenseLabel } from "@/lib/trainerentgelte";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+
+export default function TeamDetailsDialog({ isOpen, onClose, teamId }) {
+  const [team, setTeam] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && teamId) {
+      loadTeamDetails();
+    }
+  }, [isOpen, teamId]);
+
+  const loadTeamDetails = async () => {
+    setIsLoading(true);
+    try {
+      const result = await getTeamDetailsAction(teamId);
+      if (result.success) {
+        setTeam(result.team);
+      } else {
+        toast.error("Fehler beim Laden des Teams: " + result.error);
+        onClose();
+      }
+    } catch (error) {
+      console.error("Error loading team:", error);
+      toast.error("Fehler beim Laden des Teams");
+      onClose();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("de-DE");
+  };
+
+  const getGenderLabel = (gender) => {
+    switch (gender) {
+      case "männlich":
+        return "Männlich";
+      case "weiblich":
+        return "Weiblich";
+      case "divers":
+        return "Divers";
+      default:
+        return "-";
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-full lg:max-w-4xl overflow-y-auto max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle className="text-xl">
+            Team Details {team && `- ${team.name}`}
+          </DialogTitle>
+        </DialogHeader>
+
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+        ) : team ? (
+          <div className="space-y-6">
+            {/* Team Information */}
+            <div>
+              <ul className="list-none space-y-2">
+                <li>
+                  <strong className="inline-block w-32">Team Name</strong>{" "}
+                  {team.name}
+                </li>
+                <li>
+                  <strong className="inline-block w-32">Erstellt am</strong>{" "}
+                  {formatDate(team.createdAt)}
+                </li>
+                <li>
+                  <strong className="inline-block w-32">Anzahl Trainer</strong>{" "}
+                  {team.trainerTeams.length}
+                </li>
+                <li>
+                  <strong className="inline-block w-32">Anzahl Spieler</strong>{" "}
+                  {team.playerTeams.length}
+                </li>
+              </ul>
+            </div>
+            <Separator />
+
+            {/* Trainers Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-3">
+                Trainer ({team.trainerTeams.length})
+              </h3>
+              {team.trainerTeams.length === 0 ? (
+                <p className="text-muted-foreground">
+                  Keine Trainer zugeordnet
+                </p>
+              ) : (
+                <div className="border rounded overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Name
+                        </th>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Stammverein
+                        </th>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Lizenz
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {team.trainerTeams.map((trainerTeam) => (
+                        <tr
+                          key={trainerTeam.id}
+                          className="border-t hover:bg-gray-50"
+                        >
+                          <td className="px-4 py-3">
+                            {trainerTeam.trainer.name}
+                          </td>
+                          <td className="px-4 py-3">
+                            {trainerTeam.trainer.stammverein || "-"}
+                          </td>
+                          <td className="px-4 py-3">
+                            {trainerTeam.trainer.licenseType
+                              ? getTrainerLicenseLabel(
+                                  trainerTeam.trainer.licenseType
+                                )
+                              : "-"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            <Separator />
+
+            {/* Players Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-3">
+                Spieler ({team.playerTeams.length})
+              </h3>
+              {team.playerTeams.length === 0 ? (
+                <p className="text-muted-foreground">
+                  Keine Spieler zugeordnet
+                </p>
+              ) : (
+                <div className="max-h-96 overflow-y-auto border rounded">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 sticky top-0">
+                      <tr>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Name
+                        </th>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Geburtstag
+                        </th>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Geschlecht
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {team.playerTeams.map((playerTeam) => (
+                        <tr
+                          key={playerTeam.id}
+                          className="border-t hover:bg-gray-50"
+                        >
+                          <td className="px-4 py-3">
+                            {playerTeam.player.name}
+                          </td>
+                          <td className="px-4 py-3">
+                            {formatDate(playerTeam.player.birthday)}
+                          </td>
+                          <td className="px-4 py-3">
+                            {getGenderLabel(playerTeam.player.gender)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : null}
+
+        <DialogFooter className="mt-2">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="w-full sm:w-auto"
+          >
+            Schließen
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
