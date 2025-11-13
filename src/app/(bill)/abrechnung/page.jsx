@@ -12,15 +12,8 @@ async function getBills() {
     orderBy: [{ year: "desc" }, { quarter: "desc" }],
   });
 
-  // Convert Decimal to string for client components
-  const serializedBills = bills.map((bill) => ({
-    ...bill,
-    hourlyRate: bill.hourlyRate ? bill.hourlyRate.toString() : null,
-    totalCost: bill.totalCost.toString(),
-  }));
-
-  console.log("Fetched bills:", serializedBills);
-  return serializedBills;
+  console.log("Fetched bills:", bills);
+  return bills;
 }
 
 async function Abrechnung() {

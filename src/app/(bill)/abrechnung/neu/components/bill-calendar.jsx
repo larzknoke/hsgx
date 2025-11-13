@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"; // Import shadcn Button
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Separator } from "@/components/ui/separator";
+import { formatCurrency } from "@/lib/utils";
 
 export default function BillCalendar({ trainingSlots, setFinalEvents }) {
   const currentYear = new Date().getFullYear();
@@ -183,12 +184,12 @@ export default function BillCalendar({ trainingSlots, setFinalEvents }) {
                   <span>
                     {data.count}x {location}
                   </span>
-                  <span>{data.totalCost}€</span>
+                  <span>{formatCurrency(data.totalCost)}</span>
                 </div>
               ))}
               <div className="flex justify-between font-semibold border-t pt-2">
                 <span>Gesamtkosten:</span>
-                <span>{totalCost}€</span>
+                <span>{formatCurrency(totalCost)}</span>
               </div>
             </div>
             <Separator className={"my-8"} />

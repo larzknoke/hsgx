@@ -58,9 +58,9 @@ model Bill {
   year        Int
   // Pricing snapshot at bill level (optional):
   // If you want the whole bill to use one rate:
-  hourlyRate  Decimal?  @db.Decimal(10, 2)
+  hourlyRate  Float?
 
-  totalCost   Decimal   @db.Decimal(10, 2)
+  totalCost   Float
   status      String    @default("draft") // draft, submitted, paid
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -78,10 +78,10 @@ model BillEvent {
   location      String    // e.g. "bbs" | "liebig" | "billerbeck" (you can formalize with an enum)
   startDate     DateTime  // full ISO datetime
   endDate       DateTime  // full ISO datetime
-  durationHours Decimal   @db.Decimal(6, 2) // cached duration in hours for quick sums
+  durationHours Float     // cached duration in hours for quick sums
   // Pricing snapshot at event level (optional):
-  hourlyRate    Decimal?  @db.Decimal(10, 2) // use if rates can differ per event or change mid-quarter
-  cost          Decimal   @db.Decimal(10, 2) // durationHours * (hourlyRate from bill or per-event)
+  hourlyRate    Float?    // use if rates can differ per event or change mid-quarter
+  cost          Float     // durationHours * (hourlyRate from bill or per-event)
 
   canceled      Boolean   @default(false)
 
