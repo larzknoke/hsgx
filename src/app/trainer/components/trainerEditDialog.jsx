@@ -147,7 +147,7 @@ export default function TrainerEditDialog({ open, onClose, trainer }) {
                           onValueChange={field.onChange}
                           value={field.value}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Stammverein auswählen..." />
                           </SelectTrigger>
                           <SelectContent>
@@ -185,7 +185,7 @@ export default function TrainerEditDialog({ open, onClose, trainer }) {
                           onValueChange={field.onChange}
                           value={field.value}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Lizenz auswählen..." />
                           </SelectTrigger>
                           <SelectContent>
