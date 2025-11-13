@@ -30,9 +30,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import BillDetailsDialog from "./billDetailsDialog";
 
 function BillTable({ bills }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBillId, setSelectedBillId] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleRowClick = (billId) => {
+    setSelectedBillId(billId);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setSelectedBillId(null);
+  };
 
   const formatQuarter = (quarter, year) => {
     return `Q${quarter} ${year}`;
@@ -100,7 +113,11 @@ function BillTable({ bills }) {
               </TableRow>
             ) : (
               filteredBills.map((bill) => (
-                <TableRow key={bill.id}>
+                <TableRow
+                  key={bill.id}
+                  className="cursor-pointer hover:bg-gray-50"
+                  onClick={() => handleRowClick(bill.id)}
+                >
                   <TableCell className="font-medium">{bill.id}</TableCell>
                   <TableCell className="font-medium">
                     {bill.trainer.name}
@@ -145,6 +162,13 @@ function BillTable({ bills }) {
           </TableBody>
         </Table>
       </TooltipProvider>
+
+      {/* Bill Details Dialog */}
+      <BillDetailsDialog
+        isOpen={dialogOpen}
+        onClose={handleCloseDialog}
+        billId={selectedBillId}
+      />
     </>
   );
 }
