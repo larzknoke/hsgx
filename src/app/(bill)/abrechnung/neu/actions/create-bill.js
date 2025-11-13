@@ -6,8 +6,15 @@ import prisma from "@/lib/prisma";
 export async function createBillAction(billData) {
   try {
     // Validate required fields
-    if (!billData.trainerId || !billData.teamId || !billData.quarter || !billData.year) {
-      throw new Error("Pflichtfelder fehlen: Trainer, Mannschaft, Quartal und Jahr sind erforderlich");
+    if (
+      !billData.trainerId ||
+      !billData.teamId ||
+      !billData.quarter ||
+      !billData.year
+    ) {
+      throw new Error(
+        "Pflichtfelder fehlen: Trainer, Mannschaft, Quartal und Jahr sind erforderlich"
+      );
     }
 
     if (!billData.events || billData.events.length === 0) {
@@ -42,7 +49,7 @@ export async function createBillAction(billData) {
         year: billData.year,
         hourlyRate: billData.hourlyRate,
         totalCost: billData.totalCost,
-        status: "draft",
+        status: "unpaid",
         events: {
           create: billData.events,
         },
@@ -55,7 +62,7 @@ export async function createBillAction(billData) {
     });
 
     revalidatePath("/abrechnung");
-    
+
     return { success: true, bill };
   } catch (error) {
     console.error("Error creating bill:", error);
