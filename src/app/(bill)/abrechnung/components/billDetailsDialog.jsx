@@ -17,7 +17,7 @@ import { generateBillPDFAction } from "../actions/generate-bill-pdf";
 import { getTrainerLicenseLabel } from "@/lib/trainerentgelte";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { Download } from "lucide-react";
+import { Download, Euro } from "lucide-react";
 
 export default function BillDetailsDialog({ isOpen, onClose, billId }) {
   const [bill, setBill] = useState(null);
@@ -357,7 +357,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
               disabled={isUpdating || isGeneratingPDF}
               className="w-full sm:w-auto"
             >
-              <Download className="mr-2" size={16} />
+              <Download size={16} />
               {isGeneratingPDF ? "Erstelle PDF..." : "Abrechnung PDF"}
             </Button>
           )}
@@ -368,6 +368,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
               disabled={isUpdating || isGeneratingPDF}
               className="w-full sm:w-auto"
             >
+              <Euro size={16} />
               {isUpdating ? "Aktualisieren..." : "Als bezahlt markieren"}
             </Button>
           )}
