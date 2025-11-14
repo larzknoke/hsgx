@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
+import { formatDate } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -44,11 +45,6 @@ function PlayerTable({ players, teams }) {
   const openEditDialog = (player) => setEditDialogState({ open: true, player });
   const closeEditDialog = () =>
     setEditDialogState({ open: false, player: null });
-
-  const formatDate = (date) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("de-DE");
-  };
 
   const filteredPlayers = players.filter((player) =>
     player.name.toLowerCase().includes(searchTerm.toLowerCase())

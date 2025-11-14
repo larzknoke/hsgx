@@ -1,5 +1,6 @@
 import React from "react";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+import { formatDate } from "@/lib/utils";
 
 // Create styles
 const styles = StyleSheet.create({
@@ -72,11 +73,6 @@ const styles = StyleSheet.create({
 
 // Create Document Component
 const TeamPDF = ({ team }) => {
-  const formatDate = (date) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("de-DE");
-  };
-
   const getGenderLabel = (gender) => {
     const labels = {
       male: "Männlich",

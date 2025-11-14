@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
+import { formatDate } from "@/lib/utils";
 import { getTeamDetailsAction } from "../actions/get-team-details";
 import { generateTeamPDFAction } from "../actions/generate-team-pdf";
 import { getTrainerLicenseLabel } from "@/lib/trainerentgelte";
@@ -45,11 +46,6 @@ export default function TeamDetailsDialog({ isOpen, onClose, teamId }) {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("de-DE");
   };
 
   const getGenderLabel = (gender) => {
