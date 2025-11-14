@@ -20,3 +20,20 @@ export function formatDate(date) {
   if (!date) return "-";
   return new Date(date).toLocaleDateString("de-DE");
 }
+
+export function getGenderLabel(gender) {
+  switch (gender) {
+    case "männlich":
+      return "Männlich";
+    case "weiblich":
+      return "Weiblich";
+    case "divers":
+      return "Divers";
+    default:
+      return "-";
+  }
+}
+
+export function formatQuarter(quarter, year) {
+  return `Q${quarter} ${year}`;
+}

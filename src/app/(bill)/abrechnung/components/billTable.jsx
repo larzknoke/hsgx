@@ -23,7 +23,7 @@ import {
   CircleAlert,
 } from "lucide-react";
 import Link from "next/link";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatQuarter } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -45,10 +45,6 @@ function BillTable({ bills }) {
   const handleCloseDialog = () => {
     setDialogOpen(false);
     setSelectedBillId(null);
-  };
-
-  const formatQuarter = (quarter, year) => {
-    return `Q${quarter} ${year}`;
   };
 
   const filteredBills = bills.filter((bill) => {

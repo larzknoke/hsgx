@@ -1,6 +1,6 @@
 import React from "react";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatQuarter } from "@/lib/utils";
 
 // Create styles
 const styles = StyleSheet.create({
@@ -84,10 +84,6 @@ const styles = StyleSheet.create({
 
 // Create Document Component
 const BillPDF = ({ bill, groupedEvents }) => {
-  const formatQuarter = (quarter, year) => {
-    return `Q${quarter} ${year}`;
-  };
-
   const getTrainerLicenseLabel = (licenseType) => {
     const labels = {
       c_lizenz: "C-Lizenz",

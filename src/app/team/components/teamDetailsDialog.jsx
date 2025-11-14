@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getGenderLabel } from "@/lib/utils";
 import { getTeamDetailsAction } from "../actions/get-team-details";
 import { generateTeamPDFAction } from "../actions/generate-team-pdf";
 import { getTrainerLicenseLabel } from "@/lib/trainerentgelte";
@@ -45,19 +45,6 @@ export default function TeamDetailsDialog({ isOpen, onClose, teamId }) {
       onClose();
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const getGenderLabel = (gender) => {
-    switch (gender) {
-      case "männlich":
-        return "Männlich";
-      case "weiblich":
-        return "Weiblich";
-      case "divers":
-        return "Divers";
-      default:
-        return "-";
     }
   };
 

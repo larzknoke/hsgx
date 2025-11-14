@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatQuarter } from "@/lib/utils";
 import { getBillDetailsAction } from "../actions/get-bill-details";
 import { updateBillStatusAction } from "../actions/update-bill-status";
 import { generateBillPDFAction } from "../actions/generate-bill-pdf";
@@ -150,10 +150,6 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
 
     return acc;
   }, {});
-
-  const formatQuarter = (quarter, year) => {
-    return `Q${quarter} ${year}`;
-  };
 
   const getStatusLabel = (status) => {
     switch (status) {
