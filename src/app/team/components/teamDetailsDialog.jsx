@@ -11,13 +11,16 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
 import { getTeamDetailsAction } from "../actions/get-team-details";
+import { generateTeamPDFAction } from "../actions/generate-team-pdf";
 import { getTrainerLicenseLabel } from "@/lib/trainerentgelte";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { Download } from "lucide-react";
 
 export default function TeamDetailsDialog({ isOpen, onClose, teamId }) {
   const [team, setTeam] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   useEffect(() => {
     if (isOpen && teamId) {
@@ -59,6 +62,42 @@ export default function TeamDetailsDialog({ isOpen, onClose, teamId }) {
         return "Divers";
       default:
         return "-";
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!team) return;
+
+    setIsGeneratingPDF(true);
+    try {
+      // Generate PDF on server
+      const result = await generateTeamPDFAction(team.id);
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      // Convert array buffer to blob
+      const blob = new Blob([new Uint8Array(result.pdfBuffer)], {
+        type: "application/pdf",
+      });
+
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = result.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success("PDF erfolgreich heruntergeladen!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Fehler beim Erstellen des PDFs: " + error.message);
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -210,10 +249,22 @@ export default function TeamDetailsDialog({ isOpen, onClose, teamId }) {
           <Button
             variant="outline"
             onClick={onClose}
+            disabled={isGeneratingPDF}
             className="w-full sm:w-auto"
           >
             Schließen
           </Button>
+          {team && (
+            <Button
+              onClick={handleDownloadPDF}
+              variant="outline"
+              disabled={isLoading || isGeneratingPDF}
+              className="w-full sm:w-auto"
+            >
+              <Download size={16} />
+              {isGeneratingPDF ? "Erstelle PDF..." : "Team PDF"}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
