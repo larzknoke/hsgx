@@ -13,14 +13,17 @@ import { useState, useEffect } from "react";
 import { formatCurrency } from "@/lib/utils";
 import { getBillDetailsAction } from "../actions/get-bill-details";
 import { updateBillStatusAction } from "../actions/update-bill-status";
+import { generateBillPDFAction } from "../actions/generate-bill-pdf";
 import { getTrainerLicenseLabel } from "@/lib/trainerentgelte";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { Download } from "lucide-react";
 
 export default function BillDetailsDialog({ isOpen, onClose, billId }) {
   const [bill, setBill] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   useEffect(() => {
     if (isOpen && billId) {
@@ -95,6 +98,42 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
       toast.error("Fehler beim Aktualisieren des Status: " + error.message);
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!bill) return;
+
+    setIsGeneratingPDF(true);
+    try {
+      // Generate PDF on server
+      const result = await generateBillPDFAction(bill.id);
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      // Convert array buffer to blob
+      const blob = new Blob([new Uint8Array(result.pdfBuffer)], {
+        type: "application/pdf",
+      });
+
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = result.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success("PDF erfolgreich heruntergeladen!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Fehler beim Erstellen des PDFs: " + error.message);
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -306,16 +345,27 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
           <Button
             variant="outline"
             onClick={onClose}
-            disabled={isUpdating}
+            disabled={isUpdating || isGeneratingPDF}
             className="w-full sm:w-auto"
           >
             Schließen
           </Button>
+          {bill && (
+            <Button
+              onClick={handleDownloadPDF}
+              variant="outline"
+              disabled={isUpdating || isGeneratingPDF}
+              className="w-full sm:w-auto"
+            >
+              <Download className="mr-2" size={16} />
+              {isGeneratingPDF ? "Erstelle PDF..." : "Abrechnung PDF"}
+            </Button>
+          )}
           {bill && bill.status !== "paid" && (
             <Button
               onClick={handleMarkAsPaid}
               variant="success"
-              disabled={isUpdating}
+              disabled={isUpdating || isGeneratingPDF}
               className="w-full sm:w-auto"
             >
               {isUpdating ? "Aktualisieren..." : "Als bezahlt markieren"}
@@ -325,7 +375,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
             <Button
               onClick={handleMarkAsUnpaid}
               variant="warning"
-              disabled={isUpdating}
+              disabled={isUpdating || isGeneratingPDF}
               className="w-full sm:w-auto"
             >
               {isUpdating ? "Aktualisieren..." : "Als nicht bezahlt markieren"}
