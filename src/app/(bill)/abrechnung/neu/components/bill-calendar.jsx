@@ -8,6 +8,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/lib/utils";
+import interactionPlugin from "@fullcalendar/interaction";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function BillCalendar({ trainingSlots, setFinalEvents }) {
   const currentYear = new Date().getFullYear();
@@ -45,6 +62,15 @@ export default function BillCalendar({ trainingSlots, setFinalEvents }) {
   // State to store grouped events and total cost
   const [groupedEvents, setGroupedEvents] = useState({});
   const [totalCost, setTotalCost] = useState(0);
+
+  // State for the new event dialog
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [newEventData, setNewEventData] = useState({
+    location: "",
+    startTime: "",
+    endTime: "",
+  });
 
   // Define colors for each location
   const locationColors = {
@@ -151,6 +177,43 @@ export default function BillCalendar({ trainingSlots, setFinalEvents }) {
     }
   };
 
+  // Handle date click to add new event
+  const handleDateClick = (dateClickInfo) => {
+    setSelectedDate(dateClickInfo.dateStr);
+    setNewEventData({
+      location: "",
+      startTime: "",
+      endTime: "",
+    });
+    setIsDialogOpen(true);
+  };
+
+  // Handle adding new event
+  const handleAddEvent = () => {
+    if (
+      !newEventData.location ||
+      !newEventData.startTime ||
+      !newEventData.endTime
+    ) {
+      alert("Bitte füllen Sie alle Felder aus");
+      return;
+    }
+
+    const newEvent = {
+      id: crypto.randomUUID(),
+      location: newEventData.location.toUpperCase(),
+      start: `${selectedDate}T${newEventData.startTime}`,
+      end: `${selectedDate}T${newEventData.endTime}`,
+      backgroundColor:
+        locationColors[newEventData.location.toLowerCase()] || "#888888",
+      borderColor:
+        locationColors[newEventData.location.toLowerCase()] || "#888888",
+    };
+
+    setEvents((prevEvents) => [...prevEvents, newEvent]);
+    setIsDialogOpen(false);
+  };
+
   return (
     <div className="space-y-4">
       <Card>
@@ -195,7 +258,7 @@ export default function BillCalendar({ trainingSlots, setFinalEvents }) {
             <Separator className={"my-8"} />
 
             <FullCalendar
-              plugins={[dayGridPlugin, listPlugin]} // Include the list plugin
+              plugins={[dayGridPlugin, listPlugin, interactionPlugin]} // Include the list plugin
               initialView="dayGridMonth"
               locale={deLocale} // Set the locale to German
               validRange={{
@@ -204,6 +267,7 @@ export default function BillCalendar({ trainingSlots, setFinalEvents }) {
               }}
               events={events} // Use the dynamically generated events
               eventClick={handleEventClick} // Handle event click
+              dateClick={handleDateClick} // Handle date click to add event
               height={"auto"}
               headerToolbar={{
                 left: "prev,next today", // Navigation buttons
@@ -215,6 +279,80 @@ export default function BillCalendar({ trainingSlots, setFinalEvents }) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Dialog for adding new event */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Neues Training hinzufügen</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="event-date">Datum</Label>
+              <Input
+                id="event-date"
+                type="text"
+                value={selectedDate || ""}
+                disabled
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="event-location">Standort</Label>
+              <Select
+                value={newEventData.location}
+                onValueChange={(value) =>
+                  setNewEventData({ ...newEventData, location: value })
+                }
+              >
+                <SelectTrigger className="mt-1 w-full">
+                  <SelectValue placeholder="Standort auswählen..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bbs">BBS</SelectItem>
+                  <SelectItem value="liebig">Liebig</SelectItem>
+                  <SelectItem value="billerbeck">Billerbeck</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="event-start-time">Startzeit</Label>
+              <Input
+                id="event-start-time"
+                type="time"
+                value={newEventData.startTime}
+                onChange={(e) =>
+                  setNewEventData({
+                    ...newEventData,
+                    startTime: e.target.value,
+                  })
+                }
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="event-end-time">Endzeit</Label>
+              <Input
+                id="event-end-time"
+                type="time"
+                value={newEventData.endTime}
+                onChange={(e) =>
+                  setNewEventData({ ...newEventData, endTime: e.target.value })
+                }
+                className="mt-1"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Abbrechen
+            </Button>
+            <Button variant="success" onClick={handleAddEvent}>
+              Hinzufügen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
