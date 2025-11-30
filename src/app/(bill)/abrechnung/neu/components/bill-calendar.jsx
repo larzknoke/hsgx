@@ -148,7 +148,6 @@ export default function BillCalendar({
     console.log("newEvents:", newEvents);
 
     setEvents(newEvents);
-    setFinalEvents(newEvents); // Send the updated events to the parent component
   }, [selectedQuarter, trainingSlots, setFinalEvents]);
 
   // Recalculate grouped events and total cost whenever events change
@@ -227,6 +226,11 @@ export default function BillCalendar({
     setEvents((prevEvents) => [...prevEvents, newEvent]);
     setIsDialogOpen(false);
   };
+
+  // Keep parent summary in sync whenever events array changes for any reason
+  useEffect(() => {
+    setFinalEvents(events);
+  }, [events, setFinalEvents]);
 
   return (
     <div className="space-y-4">
