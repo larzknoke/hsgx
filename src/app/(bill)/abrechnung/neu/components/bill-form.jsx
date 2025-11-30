@@ -241,6 +241,8 @@ export default function BillForm({ trainers, teams }) {
           <BillCalendar
             trainingSlots={trainingSlots}
             setFinalEvents={setFinalEvents} // Pass the callback to BillCalendar
+            selectedTrainerId={form.watch("trainer")}
+            trainers={trainers}
           />
         </div>
       </div>

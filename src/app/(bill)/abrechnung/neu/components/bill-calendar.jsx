@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/lib/utils";
+import { getTrainerHourlyRate } from "@/lib/trainerentgelte";
 import interactionPlugin from "@fullcalendar/interaction";
 import {
   Dialog,
@@ -26,7 +27,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function BillCalendar({ trainingSlots, setFinalEvents }) {
+export default function BillCalendar({
+  trainingSlots,
+  setFinalEvents,
+  selectedTrainerId,
+  trainers,
+}) {
   const currentYear = new Date().getFullYear();
 
   // Define the quarters with their start and end dates
@@ -62,6 +68,14 @@ export default function BillCalendar({ trainingSlots, setFinalEvents }) {
   // State to store grouped events and total cost
   const [groupedEvents, setGroupedEvents] = useState({});
   const [totalCost, setTotalCost] = useState(0);
+
+  // Get the selected trainer's hourly rate
+  const selectedTrainer = trainers?.find(
+    (t) => t.id.toString() === selectedTrainerId
+  );
+  const hourlyRate = selectedTrainer?.licenseType
+    ? getTrainerHourlyRate(selectedTrainer.licenseType)
+    : 0;
 
   // State for the new event dialog
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -150,7 +164,7 @@ export default function BillCalendar({ trainingSlots, setFinalEvents }) {
       const durationInHours = (end - start) / (1000 * 60 * 60); // Convert milliseconds to hours
 
       acc[event.location].count += 1;
-      acc[event.location].totalCost += durationInHours * 5; // 5€ per hour
+      acc[event.location].totalCost += durationInHours * hourlyRate;
       return acc;
     }, {});
 
@@ -161,7 +175,7 @@ export default function BillCalendar({ trainingSlots, setFinalEvents }) {
 
     setGroupedEvents(grouped);
     setTotalCost(total);
-  }, [events]); // Dependencies: recalculate when events change
+  }, [events, hourlyRate]); // Dependencies: recalculate when events or hourlyRate change
 
   // Handle event deletion
   const handleEventClick = (clickInfo) => {
