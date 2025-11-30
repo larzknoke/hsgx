@@ -6,6 +6,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Sigma } from "lucide-react";
 import { Toaster } from "sonner";
+import AuthBtns from "@/components/auth/auth-btns";
+import SessionAuthProvider from "@/components/auth/session-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,9 +36,12 @@ export default async function RootLayout({ children }) {
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <AppSidebar />
+          <SessionAuthProvider>
+            <AppSidebar />
+          </SessionAuthProvider>
           <Toaster position="top-center" />
           <main className="flex flex-1 flex-col p-6  bg-gray-50/20">
+            {/* <AuthBtns /> */}
             {/* <SidebarTrigger /> */}
             {children}
           </main>

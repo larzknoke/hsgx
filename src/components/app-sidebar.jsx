@@ -1,3 +1,7 @@
+"use client";
+
+import { useSession, signIn, signOut } from "next-auth/react";
+
 import {
   Calendar,
   Coins,
@@ -72,6 +76,8 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const { data: session, status } = useSession();
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -136,17 +142,25 @@ export function AppSidebar() {
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-popper-anchor-width]"
-              >
-                <DropdownMenuItem>
-                  <span>Konto</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Logout</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
+              {session ? (
+                <DropdownMenuContent
+                  side="top"
+                  className="w-[--radix-popper-anchor-width]"
+                >
+                  <DropdownMenuItem>
+                    <span>Konto</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => signOut()}>
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              ) : (
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => signIn()}>
+                    <span>Login</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              )}
             </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
