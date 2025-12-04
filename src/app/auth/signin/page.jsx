@@ -13,7 +13,7 @@ export default async function SignInPage() {
 
   // Redirect if already logged in
   if (session) {
-    redirect("/home");
+    redirect("/");
   }
 
   return (

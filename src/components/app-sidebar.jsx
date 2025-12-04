@@ -13,6 +13,7 @@ import {
   FileSpreadsheet,
   CakeSlice,
   User,
+  LogIn,
 } from "lucide-react";
 
 import {
@@ -121,49 +122,80 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton variant="default" size="lg">
-                  <Avatar>
-                    <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="@shadcn"
-                    />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col items-start gap-0">
-                    <span>Lars Knoke</span>
-                    <span className="text-xs text-muted-foreground">
-                      info@larsknoke.com
-                    </span>
-                  </div>
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              {session ? (
+        {session ? (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton variant="default" size="lg">
+                    <Avatar>
+                      <AvatarImage
+                        src={session.user?.image}
+                        alt={session.user?.name}
+                      />
+                      <AvatarFallback>
+                        {session.user?.name
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col items-start gap-0">
+                      <span>{session.user?.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {session.user?.email}
+                      </span>
+                    </div>
+                    <ChevronUp className="ml-auto" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
                 <DropdownMenuContent
                   side="top"
                   className="w-[--radix-popper-anchor-width]"
                 >
-                  <DropdownMenuItem>
+                  <DropdownMenuItem disabled>
                     <span>Konto</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => signOut()}>
                     <span>Logout</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              ) : (
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => signIn()}>
-                    <span>Login</span>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        ) : (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton variant="default" size="lg">
+                    <Avatar>
+                      <AvatarFallback>
+                        <LogIn size={20} className="text-gray-600" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col items-start gap-0">
+                      <span>Gast</span>
+                      <span className="text-xs text-muted-foreground">
+                        Nicht angemeldet
+                      </span>
+                    </div>
+                    <ChevronUp className="ml-auto" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  className="w-[--radix-popper-anchor-width]"
+                >
+                  <DropdownMenuItem asChild>
+                    <a href="/auth/signin">Anmelden</a>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              )}
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        )}
       </SidebarFooter>
     </Sidebar>
   );

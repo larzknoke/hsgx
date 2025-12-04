@@ -14,7 +14,7 @@ export default function SignInForm() {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const callbackUrl = searchParams.get("callbackUrl") || "/home";
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const error = searchParams.get("error");
 
   // Show error if redirected with error param

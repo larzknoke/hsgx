@@ -5,7 +5,7 @@ import { z } from "zod";
 import sha256 from "crypto-js/sha256";
 
 const registerSchema = z.object({
-  email: z.string().email("Bitte geben Sie eine gültige E-Mail-Adresse ein"),
+  email: z.email("Bitte geben Sie eine gültige E-Mail-Adresse ein"),
   password: z.string().min(8, "Passwort muss mindestens 8 Zeichen lang sein"),
   name: z.string().min(1, "Name ist erforderlich"),
 });
