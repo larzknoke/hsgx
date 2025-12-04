@@ -37,6 +37,10 @@ export const authOptions = {
     }),
   ],
   session: { strategy: "jwt" },
+  pages: {
+    signIn: "/auth/signin",
+    register: "/auth/register",
+  },
 };
 
 const handler = NextAuth(authOptions);
