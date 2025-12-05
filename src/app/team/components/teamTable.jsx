@@ -93,7 +93,9 @@ function TeamTable({ teams, trainers }) {
               <TableCell className="font-medium">{team.id}</TableCell>
               <TableCell className="font-medium">{team.name}</TableCell>
               <TableCell>
-                {team.trainerTeams.map((tt) => tt.trainer.name).join(", ")}
+                {team.TrainerTeamRelation.map((tt) => tt.Trainer.name).join(
+                  ", "
+                )}
               </TableCell>
               <TableCell>{team.playerTeams?.length || 0}</TableCell>
               <TableCell className="text-right">

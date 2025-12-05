@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { LayoutWrapper } from "@/components/layout-wrapper";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Sigma } from "lucide-react";
@@ -29,19 +30,13 @@ export default async function RootLayout({ children }) {
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
   return (
-    <SidebarProvider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <AppSidebar />
-          <Toaster position="top-center" />
-          <main className="flex flex-1 flex-col p-6  bg-gray-50/20">
-            {/* <SidebarTrigger /> */}
-            {children}
-          </main>
-        </body>
-      </html>
-    </SidebarProvider>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <Toaster position="top-center" />
+        <LayoutWrapper>{children}</LayoutWrapper>
+      </body>
+    </html>
   );
 }

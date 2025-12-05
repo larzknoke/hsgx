@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -14,105 +8,150 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-// Define your database schema here
-model Trainer {
-  id          Int      @id @default(autoincrement())
-  name        String
-  stammverein String?
-  licenseType String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  trainerTeams TrainerTeamRelation[]
-
-  bills Bill[]
-}
-
-model Team {
-  id          Int                  @id @default(autoincrement())
-  name        String
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  trainerTeams TrainerTeamRelation[]
-  playerTeams PlayerTeamRelation[]
-
-  bills Bill[]
-}
-
-model Player {
-  id          Int      @id @default(autoincrement())
-  name        String
-  birthday    DateTime?
-  gender      String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  playerTeams PlayerTeamRelation[]
-}
-
 model Bill {
-  id          Int       @id @default(autoincrement())
-  trainerId   Int
-  teamId      Int
-  iban        String?
-  quarter     Int       // 1..4
-  year        Int
-  // Pricing snapshot at bill level (optional):
-  // If you want the whole bill to use one rate:
-  hourlyRate  Float?
-
-  totalCost   Float
-  status      String    @default("draft") // draft, submitted, paid
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  trainer     Trainer   @relation(fields: [trainerId], references: [id], onDelete: Cascade)
-  team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  events      BillEvent[]
+  id         Int         @id @default(autoincrement())
+  trainerId  Int
+  teamId     Int
+  iban       String?
+  quarter    Int
+  year       Int
+  hourlyRate Float?
+  totalCost  Float
+  status     String      @default("draft")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime
+  team       Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  trainer    Trainer     @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  events     BillEvent[]
 
   @@unique([trainerId, teamId, quarter, year])
 }
 
 model BillEvent {
-  id            Int       @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   billId        Int
-  location      String    // e.g. "bbs" | "liebig" | "billerbeck" (you can formalize with an enum)
-  startDate     DateTime  // full ISO datetime
-  endDate       DateTime  // full ISO datetime
-  durationHours Float     // cached duration in hours for quick sums
-  // Pricing snapshot at event level (optional):
-  hourlyRate    Float?    // use if rates can differ per event or change mid-quarter
-  cost          Float     // durationHours * (hourlyRate from bill or per-event)
-
-  canceled      Boolean   @default(false)
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  bill          Bill      @relation(fields: [billId], references: [id], onDelete: Cascade)
+  location      String
+  startDate     DateTime
+  endDate       DateTime
+  durationHours Float
+  hourlyRate    Float?
+  cost          Float
+  canceled      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  bill          Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
 
   @@index([billId, startDate])
 }
 
-model TrainerTeamRelation {
-  id        Int      @id @default(autoincrement())
-  trainerId Int
-  teamId    Int
-  trainer   Trainer  @relation(fields: [trainerId], references: [id], onDelete: Cascade)
-  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@unique([trainerId, teamId])
+model Player {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  birthday           DateTime?
+  gender             String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  playerTeams        PlayerTeamRelation[]
 }
 
 model PlayerTeamRelation {
   id        Int      @id @default(autoincrement())
   playerId  Int
   teamId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime
   player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
   team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+
   @@unique([playerId, teamId])
+}
+
+model Team {
+  id                  Int                   @id @default(autoincrement())
+  name                String
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime
+  bills               Bill[]
+  playerTeams         PlayerTeamRelation[]
+  trainerTeams        TrainerTeamRelation[]
+}
+
+model Trainer {
+  id                  Int                   @id @default(autoincrement())
+  name                String
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime
+  stammverein         String?
+  licenseType         String?
+  Bill                Bill[]
+  trainerTeams        TrainerTeamRelation[]
+}
+
+model TrainerTeamRelation {
+  id        Int      @id @default(autoincrement())
+  trainerId Int
+  teamId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  trainer   Trainer  @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@unique([trainerId, teamId])
+}
+
+model account {
+  id                    String    @id
+  userId                String
+  accountId             String    @map("providerAccountId")
+  providerId            String    @map("provider")
+  accessToken           String?
+  refreshToken          String?   @map("refresh_token")
+  accessTokenExpiresAt  DateTime? @map("expiresAt")
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model user {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
+  accounts      account[]
+  sessions      session[]
+}
+
+model verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+
+  @@unique([identifier, value])
 }

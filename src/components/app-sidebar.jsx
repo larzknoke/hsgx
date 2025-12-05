@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Calendar,
   Coins,
@@ -34,6 +36,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { ChevronUp, User2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 // Menu items.
 const items = [
@@ -72,6 +76,29 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+
+  const handleLogout = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/signin");
+        },
+      },
+    });
+  };
+
+  const getUserInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -117,37 +144,58 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton variant="default" size="lg">
-                  <Avatar>
-                    <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="@shadcn"
-                    />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col items-start gap-0">
-                    <span>Lars Knoke</span>
-                    <span className="text-xs text-muted-foreground">
-                      info@larsknoke.com
-                    </span>
+            {isPending ? (
+              <SidebarMenuButton variant="default" size="lg" disabled>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+                  <div className="flex flex-col gap-1">
+                    <div className="h-4 w-24 bg-muted rounded animate-pulse" />
+                    <div className="h-3 w-32 bg-muted rounded animate-pulse" />
                   </div>
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-popper-anchor-width]"
-              >
-                <DropdownMenuItem>
-                  <span>Konto</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Logout</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </div>
+              </SidebarMenuButton>
+            ) : session ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton variant="default" size="lg">
+                    <Avatar>
+                      <AvatarImage
+                        src={session.user.image || ""}
+                        alt={session.user.name || "User"}
+                      />
+                      <AvatarFallback>
+                        {getUserInitials(session.user.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col items-start gap-0">
+                      <span>{session.user.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {session.user.email}
+                      </span>
+                    </div>
+                    <ChevronUp className="ml-auto" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  className="w-[--radix-popper-anchor-width]"
+                >
+                  <DropdownMenuItem asChild>
+                    <a href="/account">Konto</a>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <SidebarMenuButton asChild variant="default" size="lg">
+                <a href="/signin">
+                  <User2 />
+                  <span>Sign In</span>
+                </a>
+              </SidebarMenuButton>
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
