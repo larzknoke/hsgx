@@ -19,7 +19,7 @@ model Bill {
   totalCost  Float
   status     String      @default("draft")
   createdAt  DateTime    @default(now())
-  updatedAt  DateTime
+  updatedAt  DateTime    @updatedAt
   team       Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
   trainer    Trainer     @relation(fields: [trainerId], references: [id], onDelete: Cascade)
   events     BillEvent[]
@@ -38,7 +38,7 @@ model BillEvent {
   cost          Float
   canceled      Boolean  @default(false)
   createdAt     DateTime @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime @updatedAt
   bill          Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
 
   @@index([billId, startDate])
@@ -50,7 +50,7 @@ model Player {
   birthday           DateTime?
   gender             String?
   createdAt          DateTime             @default(now())
-  updatedAt          DateTime
+  updatedAt          DateTime             @updatedAt
   playerTeams        PlayerTeamRelation[]
 }
 
@@ -59,7 +59,7 @@ model PlayerTeamRelation {
   playerId  Int
   teamId    Int
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
   player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
   team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
@@ -70,7 +70,7 @@ model Team {
   id                  Int                   @id @default(autoincrement())
   name                String
   createdAt           DateTime              @default(now())
-  updatedAt           DateTime
+  updatedAt           DateTime              @updatedAt
   bills               Bill[]
   playerTeams         PlayerTeamRelation[]
   trainerTeams        TrainerTeamRelation[]
@@ -80,7 +80,7 @@ model Trainer {
   id                  Int                   @id @default(autoincrement())
   name                String
   createdAt           DateTime              @default(now())
-  updatedAt           DateTime
+  updatedAt           DateTime              @updatedAt
   stammverein         String?
   licenseType         String?
   Bill                Bill[]
@@ -92,7 +92,7 @@ model TrainerTeamRelation {
   trainerId Int
   teamId    Int
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
   team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   trainer   Trainer  @relation(fields: [trainerId], references: [id], onDelete: Cascade)
 
@@ -112,7 +112,7 @@ model account {
   idToken               String?
   password              String?
   createdAt             DateTime  @default(now())
-  updatedAt             DateTime
+  updatedAt             DateTime  @updatedAt
   user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([providerId, accountId])
@@ -124,7 +124,7 @@ model session {
   expiresAt DateTime
   token     String   @unique
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
   userId    String
@@ -140,7 +140,7 @@ model user {
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime  @updatedAt
   accounts      account[]
   sessions      session[]
 }
@@ -151,7 +151,7 @@ model verification {
   value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
-  updatedAt  DateTime
+  updatedAt  DateTime @updatedAt
 
   @@unique([identifier, value])
 }
