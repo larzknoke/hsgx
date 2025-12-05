@@ -3,14 +3,12 @@
 import { usePathname } from "next/navigation";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Volleyball } from "lucide-react";
 
 export function LayoutWrapper({ children }) {
   const pathname = usePathname();
 
   // Don't show sidebar on auth pages
-  const isAuthPage =
-    pathname === "/signin" || pathname === "/signup" || pathname === "/";
+  const isAuthPage = pathname === "/signin" || pathname === "/signup";
 
   if (isAuthPage) {
     return <>{children}</>;
