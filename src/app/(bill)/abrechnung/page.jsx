@@ -1,3 +1,5 @@
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import BillTable from "./components/billTable";
@@ -17,6 +19,10 @@ async function getBills() {
 }
 
 async function Abrechnung() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  console.log("Session in Abrechnung page:", session);
   const bills = await getBills();
 
   return (
