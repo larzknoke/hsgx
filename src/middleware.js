@@ -3,21 +3,21 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
 export async function middleware(request) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  // const session = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
 
   // THIS IS NOT SECURE!
   // This is the recommended approach to optimistically redirect users
   // We recommend handling auth checks in each page/route
-  if (!session) {
-    return NextResponse.redirect(new URL("/signin", request.url));
-  }
+  // if (!session) {
+  //   return NextResponse.redirect(new URL("/signin", request.url));
+  // }
 
   return NextResponse.next();
 }
 
 export const config = {
   runtime: "nodejs", // Required for auth.api calls
-  matcher: ["/team"], // Specify the routes the middleware applies to
+  matcher: [], // Specify the routes the middleware applies to
 };

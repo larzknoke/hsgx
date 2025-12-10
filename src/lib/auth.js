@@ -1,8 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-// If your Prisma file is located elsewhere, you can change the path
-// import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaClient } from "../../generated/prisma/client";
+import { admin } from "better-auth/plugins";
 
 const prisma = new PrismaClient();
 export const auth = betterAuth({
@@ -17,4 +16,12 @@ export const auth = betterAuth({
   session: {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
+  plugins: [
+    admin({
+      // optional: defaultRole oder adminRole angeben, wenn du willst
+      roles: ["admin", "kassenwart", "trainer"],
+      defaultRole: "user", // optional
+      adminRole: "admin", // optional
+    }),
+  ],
 });

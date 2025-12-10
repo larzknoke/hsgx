@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import TeamTable from "./components/teamTable";
 import prisma from "@/lib/prisma";
 import { Skeleton } from "@/components/ui/skeleton";
+import { requireSession } from "@/lib/auth-helper";
+import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 async function getTeams() {
   const teams = await prisma.team.findMany({
@@ -28,6 +31,9 @@ async function getTrainers() {
 }
 
 async function Team() {
+  const session = await requireSession();
+  if (!session) redirect("/signin");
+
   const teams = await getTeams();
   const trainers = await getTrainers();
 

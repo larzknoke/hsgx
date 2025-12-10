@@ -29,13 +29,13 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  // const session = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
-  if (!session) redirect("/signin");
+  // if (!session) redirect("/signin");
 
   return (
     <html lang="en">
