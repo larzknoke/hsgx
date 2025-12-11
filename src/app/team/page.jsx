@@ -41,7 +41,7 @@ async function Team() {
     <div className="flex flex-col gap-6">
       <h1>Teams</h1>
       <Suspense fallback={<Skeleton />}>
-        <TeamTable teams={teams} trainers={trainers} />
+        <TeamTable teams={teams} trainers={trainers} session={session} />
       </Suspense>
     </div>
   );

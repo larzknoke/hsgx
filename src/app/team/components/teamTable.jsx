@@ -23,8 +23,9 @@ import TeamDeleteDialog from "./teamDeleteDialog";
 import TeamNewDialog from "./teamNewDialog";
 import TeamEditDialog from "./teamEditDialog";
 import TeamDetailsDialog from "./teamDetailsDialog";
+import { hasRole } from "@/lib/roles";
 
-function TeamTable({ teams, trainers }) {
+function TeamTable({ teams, trainers, session }) {
   const router = useRouter();
   const [deleteDialogState, setDeleteDialogState] = useState({
     open: false,
@@ -37,6 +38,9 @@ function TeamTable({ teams, trainers }) {
   const [newDialogOpen, setNewDialogOpen] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+
+  const isAdminOrKassenwart =
+    hasRole(session, "admin") || hasRole(session, "kassenwart");
 
   const handleRowClick = (teamId, event) => {
     // Don't open details dialog if clicking on dropdown menu
@@ -68,7 +72,11 @@ function TeamTable({ teams, trainers }) {
             <InputGroupButton variant="secondary">Suche</InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
-        <Button variant="success" onClick={() => setNewDialogOpen(true)}>
+        <Button
+          disabled={!isAdminOrKassenwart}
+          variant="success"
+          onClick={() => setNewDialogOpen(true)}
+        >
           <PlusIcon /> Neues Team
         </Button>
       </div>
@@ -97,10 +105,12 @@ function TeamTable({ teams, trainers }) {
               </TableCell>
               <TableCell>{team.playerTeams?.length || 0}</TableCell>
               <TableCell className="text-right">
-                <TeamListDropdown
-                  onDeleteClick={() => openDeleteDialog(team)}
-                  onEditClick={() => openEditDialog(team)}
-                />
+                {isAdminOrKassenwart && (
+                  <TeamListDropdown
+                    onDeleteClick={() => openDeleteDialog(team)}
+                    onEditClick={() => openEditDialog(team)}
+                  />
+                )}
               </TableCell>
             </TableRow>
           ))}
@@ -112,6 +122,7 @@ function TeamTable({ teams, trainers }) {
         isOpen={detailsDialogOpen}
         onClose={handleCloseDetailsDialog}
         teamId={selectedTeamId}
+        session={session}
       />
 
       <TeamDeleteDialog

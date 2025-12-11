@@ -26,8 +26,9 @@ import {
   getTrainerLicenseLabel,
   getTrainerHourlyRate,
 } from "@/lib/trainerentgelte";
+import { hasRole } from "@/lib/roles";
 
-function TrainerTable({ trainers }) {
+function TrainerTable({ trainers, session }) {
   const router = useRouter();
   const [deleteDialogState, setDeleteDialogState] = useState({
     open: false,
@@ -38,6 +39,9 @@ function TrainerTable({ trainers }) {
     trainer: null,
   });
   const [newDialogOpen, setNewDialogOpen] = useState(false);
+
+  const isAdminOrKassenwart =
+    hasRole(session, "admin") || hasRole(session, "kassenwart");
 
   const openDeleteDialog = (trainer) =>
     setDeleteDialogState({ open: true, trainer });
@@ -58,7 +62,11 @@ function TrainerTable({ trainers }) {
             <InputGroupButton variant="secondary">Suche</InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
-        <Button variant="success" onClick={() => setNewDialogOpen(true)}>
+        <Button
+          disabled={!isAdminOrKassenwart}
+          variant="success"
+          onClick={() => setNewDialogOpen(true)}
+        >
           <PlusIcon /> Neuer Trainer
         </Button>
       </div>
@@ -70,8 +78,8 @@ function TrainerTable({ trainers }) {
             <TableHead>Trainer</TableHead>
             <TableHead>Teams</TableHead>
             <TableHead>Stammverein</TableHead>
-            <TableHead>Lizenz</TableHead>
-            <TableHead>€/h</TableHead>
+            {isAdminOrKassenwart && <TableHead>Lizenz</TableHead>}
+            {isAdminOrKassenwart && <TableHead>€/h</TableHead>}
             <TableHead className="text-right"></TableHead>
           </TableRow>
         </TableHeader>
@@ -85,19 +93,27 @@ function TrainerTable({ trainers }) {
                   "-"}
               </TableCell>
               <TableCell>{trainer.stammverein || "-"}</TableCell>
-              <TableCell>
-                {getTrainerLicenseLabel(trainer.licenseType)}
-              </TableCell>
-              <TableCell>
-                {trainer.licenseType
-                  ? `${getTrainerHourlyRate(trainer.licenseType).toFixed(2)} €`
-                  : "-"}
-              </TableCell>
+              {isAdminOrKassenwart && (
+                <TableCell>
+                  {getTrainerLicenseLabel(trainer.licenseType)}
+                </TableCell>
+              )}
+              {isAdminOrKassenwart && (
+                <TableCell>
+                  {trainer.licenseType
+                    ? `${getTrainerHourlyRate(trainer.licenseType).toFixed(
+                        2
+                      )} €`
+                    : "-"}
+                </TableCell>
+              )}
               <TableCell className="text-right">
-                <TrainerListDropdown
-                  onDeleteClick={() => openDeleteDialog(trainer)}
-                  onEditClick={() => openEditDialog(trainer)}
-                />
+                {isAdminOrKassenwart && (
+                  <TrainerListDropdown
+                    onDeleteClick={() => openDeleteDialog(trainer)}
+                    onEditClick={() => openEditDialog(trainer)}
+                  />
+                )}
               </TableCell>
             </TableRow>
           ))}

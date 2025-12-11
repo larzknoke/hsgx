@@ -4,7 +4,7 @@ import { pdf } from "@react-pdf/renderer";
 import TeamPDF from "@/pdf/team-pdf";
 import prisma from "@/lib/prisma";
 
-export async function generateTeamPDFAction(teamId) {
+export async function generateTeamPDFAction(teamId, showLicense = false) {
   try {
     // Fetch team details from database
     const team = await prisma.team.findUnique({
@@ -28,7 +28,7 @@ export async function generateTeamPDFAction(teamId) {
     }
 
     // Generate PDF blob and convert to array buffer
-    const blob = await pdf(TeamPDF({ team })).toBlob();
+    const blob = await pdf(TeamPDF({ team, showLicense })).toBlob();
 
     const buffer = await blob.arrayBuffer();
 

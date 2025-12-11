@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
 });
 
 // Create Document Component
-const TeamPDF = ({ team }) => {
+const TeamPDF = ({ team, showLicense = false }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -115,7 +115,7 @@ const TeamPDF = ({ team }) => {
               <View style={styles.tableHeader}>
                 <Text style={styles.tableCellWide}>Name</Text>
                 <Text style={styles.tableCell}>Stammverein</Text>
-                <Text style={styles.tableCell}>Lizenz</Text>
+                {showLicense && <Text style={styles.tableCell}>Lizenz</Text>}
               </View>
               {team.trainerTeams.map((trainerTeam) => (
                 <View key={trainerTeam.id} style={styles.tableRow}>
@@ -125,9 +125,11 @@ const TeamPDF = ({ team }) => {
                   <Text style={styles.tableCell}>
                     {trainerTeam.trainer.stammverein || "-"}
                   </Text>
-                  <Text style={styles.tableCell}>
-                    {trainerTeam.trainer.licenseType || "-"}
-                  </Text>
+                  {showLicense && (
+                    <Text style={styles.tableCell}>
+                      {trainerTeam.trainer.licenseType || "-"}
+                    </Text>
+                  )}
                 </View>
               ))}
             </View>

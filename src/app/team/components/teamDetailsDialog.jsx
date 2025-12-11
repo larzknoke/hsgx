@@ -17,11 +17,20 @@ import { getTrainerLicenseLabel } from "@/lib/trainerentgelte";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
+import { hasRole } from "@/lib/roles";
 
-export default function TeamDetailsDialog({ isOpen, onClose, teamId }) {
+export default function TeamDetailsDialog({
+  isOpen,
+  onClose,
+  teamId,
+  session,
+}) {
   const [team, setTeam] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  const isAdminOrKassenwart =
+    hasRole(session, "admin") || hasRole(session, "kassenwart");
 
   useEffect(() => {
     if (isOpen && teamId) {
@@ -54,7 +63,7 @@ export default function TeamDetailsDialog({ isOpen, onClose, teamId }) {
     setIsGeneratingPDF(true);
     try {
       // Generate PDF on server
-      const result = await generateTeamPDFAction(team.id);
+      const result = await generateTeamPDFAction(team.id, isAdminOrKassenwart);
 
       if (!result.success) {
         throw new Error(result.error);
@@ -144,9 +153,11 @@ export default function TeamDetailsDialog({ isOpen, onClose, teamId }) {
                         <th className="px-4 py-3 text-left font-medium">
                           Stammverein
                         </th>
-                        <th className="px-4 py-3 text-left font-medium">
-                          Lizenz
-                        </th>
+                        {isAdminOrKassenwart && (
+                          <th className="px-4 py-3 text-left font-medium">
+                            Lizenz
+                          </th>
+                        )}
                       </tr>
                     </thead>
                     <tbody>
@@ -161,13 +172,15 @@ export default function TeamDetailsDialog({ isOpen, onClose, teamId }) {
                           <td className="px-4 py-3">
                             {trainerTeam.trainer.stammverein || "-"}
                           </td>
-                          <td className="px-4 py-3">
-                            {trainerTeam.trainer.licenseType
-                              ? getTrainerLicenseLabel(
-                                  trainerTeam.trainer.licenseType
-                                )
-                              : "-"}
-                          </td>
+                          {isAdminOrKassenwart && (
+                            <td className="px-4 py-3">
+                              {trainerTeam.trainer.licenseType
+                                ? getTrainerLicenseLabel(
+                                    trainerTeam.trainer.licenseType
+                                  )
+                                : "-"}
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>
