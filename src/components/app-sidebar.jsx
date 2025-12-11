@@ -11,6 +11,7 @@ import {
   FileSpreadsheet,
   CakeSlice,
   User,
+  UserCog,
 } from "lucide-react";
 
 import {
@@ -38,6 +39,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronUp, User2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { hasRole } from "@/lib/roles";
 
 // Menu items.
 const items = [
@@ -99,6 +101,8 @@ export function AppSidebar() {
       .slice(0, 2);
   };
 
+  const isAdmin = session && hasRole(session, "admin");
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -143,6 +147,16 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          {isAdmin && (
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a href="/user">
+                  <UserCog />
+                  <span>Benutzerverwaltung</span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             {isPending ? (
               <SidebarMenuButton variant="default" size="lg" disabled>

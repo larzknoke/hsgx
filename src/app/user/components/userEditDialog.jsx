@@ -1,0 +1,250 @@
+"use client";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useEffect } from "react";
+import { useTransition } from "react";
+import { updateUserAction } from "@/app/user/actions/update-user";
+import { toast } from "sonner";
+
+export default function UserEditDialog({ open, onClose, user }) {
+  const [isPending, startTransition] = useTransition();
+
+  const formSchema = z.object({
+    name: z.string().min(1, { message: "Bitte einen Namen eingeben" }),
+    email: z.string().email({ message: "Ungültige E-Mail-Adresse" }),
+    role: z.string().optional(),
+    banned: z.boolean().default(false),
+    banReason: z.string().optional(),
+  });
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      role: "",
+      banned: false,
+      banReason: "",
+    },
+  });
+
+  // Update form when user changes
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        name: user.name || "",
+        email: user.email || "",
+        role: user.role || "",
+        banned: user.banned || false,
+        banReason: user.banReason || "",
+      });
+    }
+  }, [user, form]);
+
+  function onSubmit(data) {
+    if (!user) return;
+
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("id", user.id);
+      formData.append("name", data.name);
+      formData.append("email", data.email);
+      if (data.role) formData.append("role", data.role);
+      formData.append("banned", data.banned.toString());
+      if (data.banReason) formData.append("banReason", data.banReason);
+
+      try {
+        await updateUserAction(formData);
+        toast.success("Benutzer erfolgreich aktualisiert");
+        onClose();
+      } catch (error) {
+        toast.error("Fehler beim Aktualisieren: " + error.message);
+      }
+    });
+  }
+
+  function onReset() {
+    if (user) {
+      form.reset({
+        name: user.name || "",
+        email: user.email || "",
+        role: user.role || "",
+        banned: user.banned || false,
+        banReason: user.banReason || "",
+      });
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Benutzer bearbeiten</DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            onReset={onReset}
+            className="space-y-8 @container"
+          >
+            <div className="grid grid-cols-12 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                    <FormLabel className="flex shrink-0">Name</FormLabel>
+                    <div className="w-full">
+                      <FormControl>
+                        <div className="relative w-full">
+                          <Input type="text" id="name" {...field} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                    <FormLabel className="flex shrink-0">E-Mail</FormLabel>
+                    <div className="w-full">
+                      <FormControl>
+                        <div className="relative w-full">
+                          <Input type="email" id="email" {...field} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              {/* <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                    <FormLabel className="flex shrink-0">Rolle</FormLabel>
+                    <div className="w-full">
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Rolle auswählen..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="">Keine Rolle</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="kassenwart">
+                              Kassenwart
+                            </SelectItem>
+                            <SelectItem value="trainer">Trainer</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              /> */}
+
+              <FormField
+                control={form.control}
+                name="banned"
+                render={({ field }) => (
+                  <FormItem className="col-span-12 col-start-auto flex flex-row items-center gap-2 space-y-0">
+                    <FormControl>
+                      <input
+                        type="checkbox"
+                        checked={field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        className="h-4 w-4"
+                      />
+                    </FormControl>
+                    <FormLabel className="flex shrink-0">
+                      Benutzer sperren
+                    </FormLabel>
+                  </FormItem>
+                )}
+              />
+
+              {form.watch("banned") && (
+                <FormField
+                  control={form.control}
+                  name="banReason"
+                  render={({ field }) => (
+                    <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                      <FormLabel className="flex shrink-0">
+                        Sperrgrund
+                      </FormLabel>
+                      <div className="w-full">
+                        <FormControl>
+                          <div className="relative w-full">
+                            <Input
+                              type="text"
+                              id="banReason"
+                              placeholder="Optional"
+                              {...field}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+          </form>
+        </Form>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Abbrechen
+          </Button>
+          <Button
+            variant="success"
+            onClick={() => {
+              form.handleSubmit(onSubmit)();
+            }}
+            disabled={isPending}
+          >
+            {isPending ? "Speichern..." : "Speichern"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
