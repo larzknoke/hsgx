@@ -45,13 +45,13 @@ model BillEvent {
 }
 
 model Player {
-  id                 Int                  @id @default(autoincrement())
-  name               String
-  birthday           DateTime?
-  gender             String?
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
-  playerTeams        PlayerTeamRelation[]
+  id          Int                  @id @default(autoincrement())
+  name        String
+  birthday    DateTime?
+  gender      String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  playerTeams PlayerTeamRelation[]
 }
 
 model PlayerTeamRelation {
@@ -67,24 +67,24 @@ model PlayerTeamRelation {
 }
 
 model Team {
-  id                  Int                   @id @default(autoincrement())
-  name                String
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  bills               Bill[]
-  playerTeams         PlayerTeamRelation[]
-  trainerTeams        TrainerTeamRelation[]
+  id           Int                   @id @default(autoincrement())
+  name         String
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  bills        Bill[]
+  playerTeams  PlayerTeamRelation[]
+  trainerTeams TrainerTeamRelation[]
 }
 
 model Trainer {
-  id                  Int                   @id @default(autoincrement())
-  name                String
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  stammverein         String?
-  licenseType         String?
-  Bill                Bill[]
-  trainerTeams        TrainerTeamRelation[]
+  id           Int                   @id @default(autoincrement())
+  name         String
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  stammverein  String?
+  licenseType  String?
+  Bill         Bill[]
+  trainerTeams TrainerTeamRelation[]
 }
 
 model TrainerTeamRelation {
@@ -99,53 +99,63 @@ model TrainerTeamRelation {
   @@unique([trainerId, teamId])
 }
 
-model account {
-  id                    String    @id
-  userId                String
-  accountId             String    @map("providerAccountId")
-  providerId            String    @map("provider")
-  accessToken           String?
-  refreshToken          String?   @map("refresh_token")
-  accessTokenExpiresAt  DateTime? @map("expiresAt")
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  idToken               String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([providerId, accountId])
-  @@index([userId])
-}
-
-model session {
-  id        String   @id
-  expiresAt DateTime
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
-model user {
+model User {
   id            String    @id
   name          String
-  email         String    @unique
+  email         String
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  accounts      account[]
-  sessions      session[]
+  role          String?
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
 }
 
-model verification {
+model Session {
+  id             String   @id
+  expiresAt      DateTime
+  token          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  impersonatedBy String?
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
   id         String   @id
   identifier String
   value      String
@@ -153,5 +163,6 @@ model verification {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@unique([identifier, value])
+  @@index([identifier])
+  @@map("verification")
 }

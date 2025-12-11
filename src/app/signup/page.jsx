@@ -6,6 +6,7 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -48,13 +49,18 @@ export default function SignUpPage() {
             router.push("/");
           },
           onError: (ctx) => {
-            setError(ctx.error.message);
+            console.log("Sign-up error context:", ctx);
+            const message = ctx?.error?.message || "Ein Fehler ist aufgetreten";
+            setError(message);
+            toast.error(message);
             setLoading(false);
           },
         }
       );
     } catch (err) {
-      setError("Ein unerwarteter Fehler ist aufgetreten");
+      const message = err?.message || "Ein unerwarteter Fehler ist aufgetreten";
+      setError(message);
+      toast.error(message);
       setLoading(false);
     }
   };
@@ -75,11 +81,11 @@ export default function SignUpPage() {
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
-            {error && (
-              <div className="p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-md">
+            {/* {error && (
+              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
                 {error}
               </div>
-            )}
+            )} */}
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
               <Input

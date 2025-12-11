@@ -20,7 +20,7 @@ export const auth = betterAuth({
     admin({
       // optional: defaultRole oder adminRole angeben, wenn du willst
       roles: ["admin", "kassenwart", "trainer"],
-      defaultRole: "user", // optional
+      defaultRole: "trainer", // optional
       adminRole: "admin", // optional
     }),
   ],
