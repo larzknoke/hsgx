@@ -2,6 +2,9 @@
 
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useTransition } from "react";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -12,10 +15,29 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { changePasswordAction } from "./actions/change-password";
 
 export default function AccountPage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const [isChangingPassword, startTransition] = useTransition();
 
   const handleLogout = async () => {
     await authClient.signOut({
@@ -24,6 +46,59 @@ export default function AccountPage() {
           router.push("/signin");
         },
       },
+    });
+  };
+
+  const handleChangePassword = () => {
+    setPasswordError("");
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setIsPasswordDialogOpen(true);
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPasswordError("");
+
+    // Validate form
+    if (!passwordForm.currentPassword) {
+      setPasswordError("Aktuelles Passwort ist erforderlich");
+      return;
+    }
+    if (!passwordForm.newPassword) {
+      setPasswordError("Neues Passwort ist erforderlich");
+      return;
+    }
+    if (passwordForm.newPassword.length < 8) {
+      setPasswordError("Neues Passwort muss mindestens 8 Zeichen lang sein");
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError("Passwörter stimmen nicht überein");
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await changePasswordAction(
+        passwordForm.currentPassword,
+        passwordForm.newPassword
+      );
+
+      if (result.success) {
+        toast.success(result.message || "Passwort erfolgreich geändert");
+        setIsPasswordDialogOpen(false);
+        setPasswordForm({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        setPasswordError(result.error || "Ein Fehler ist aufgetreten");
+        toast.error(result.error || "Ein Fehler ist aufgetreten");
+      }
     });
   };
 
@@ -115,13 +190,104 @@ export default function AccountPage() {
             </div>
           </div>
 
-          <div className="border-t pt-6 flex justify-end">
+          <div className="border-t pt-6 flex justify-between">
+            <Button variant="outline" onClick={handleChangePassword}>
+              Passwort ändern
+            </Button>
             <Button variant="destructive" onClick={handleLogout}>
               Abmelden
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      <Dialog
+        open={isPasswordDialogOpen}
+        onOpenChange={setIsPasswordDialogOpen}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Passwort ändern</DialogTitle>
+            <DialogDescription>
+              Geben Sie Ihr aktuelles und neues Passwort ein
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handlePasswordSubmit}>
+            <div className="space-y-4">
+              {passwordError && (
+                <div className="p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-md">
+                  {passwordError}
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="currentPassword">Aktuelles Passwort</Label>
+                <Input
+                  id="currentPassword"
+                  type="password"
+                  value={passwordForm.currentPassword}
+                  onChange={(e) =>
+                    setPasswordForm({
+                      ...passwordForm,
+                      currentPassword: e.target.value,
+                    })
+                  }
+                  disabled={isChangingPassword}
+                  placeholder="••••••••"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">Neues Passwort</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) =>
+                    setPasswordForm({
+                      ...passwordForm,
+                      newPassword: e.target.value,
+                    })
+                  }
+                  disabled={isChangingPassword}
+                  placeholder="••••••••"
+                  minLength={8}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Mindestens 8 Zeichen erforderlich
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) =>
+                    setPasswordForm({
+                      ...passwordForm,
+                      confirmPassword: e.target.value,
+                    })
+                  }
+                  disabled={isChangingPassword}
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+            <DialogFooter className="mt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsPasswordDialogOpen(false)}
+                disabled={isChangingPassword}
+              >
+                Abbrechen
+              </Button>
+              <Button type="submit" disabled={isChangingPassword}>
+                {isChangingPassword ? "Wird geändert..." : "Passwort ändern"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
