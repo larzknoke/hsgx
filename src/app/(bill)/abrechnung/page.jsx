@@ -4,6 +4,8 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import BillTable from "./components/billTable";
 import prisma from "@/lib/prisma";
+import { hasRole } from "@/lib/roles";
+import { redirect } from "next/navigation";
 
 async function getBills() {
   const bills = await prisma.bill.findMany({
@@ -22,7 +24,12 @@ async function Abrechnung() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  console.log("Session in Abrechnung page:", session);
+
+  // Check if user has admin role
+  if (!hasRole(session, "admin")) {
+    redirect("/");
+  }
+
   const bills = await getBills();
 
   return (
