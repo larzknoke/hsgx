@@ -32,10 +32,16 @@ import {
 } from "@/components/ui/tooltip";
 import BillDetailsDialog from "./billDetailsDialog";
 
-function BillTable({ bills }) {
+function BillTable({ bills, session }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBillId, setSelectedBillId] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const isAdminOrKassenwart =
+    session?.user?.role === "admin" ||
+    session?.user?.role === "kassenwart" ||
+    session?.user?.role?.split(",").includes("admin") ||
+    session?.user?.role?.split(",").includes("kassenwart");
 
   const handleRowClick = (billId) => {
     setSelectedBillId(billId);
@@ -83,7 +89,10 @@ function BillTable({ bills }) {
       <TooltipProvider>
         <Table>
           <TableCaption>
-            Alle Abrechnungen - {new Date().toLocaleDateString("de-DE")}
+            {isAdminOrKassenwart
+              ? "Alle Abrechnungen"
+              : `Alle Abrechnungen von ${session?.user?.name || "dir"}`}{" "}
+            - {new Date().toLocaleDateString("de-DE")}
           </TableCaption>
           <TableHeader>
             <TableRow>

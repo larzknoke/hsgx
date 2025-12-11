@@ -180,7 +180,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
         ) : bill ? (
           <div className="space-y-6">
             {/* Bill Information */}
-            <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
               <ul className="list-none space-y-2">
                 <li>
                   <strong className="inline-block w-32">Trainer</strong>{" "}
@@ -203,6 +203,23 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
                 <li>
                   <strong className="inline-block w-32">Zeitraum</strong>{" "}
                   {formatQuarter(bill.quarter, bill.year)}
+                </li>
+              </ul>
+              <ul className="list-none space-y-2">
+                <li>
+                  <strong className="inline-block w-32">Erstellt von</strong>{" "}
+                  {bill.user?.name || "-"}
+                </li>
+                <li>
+                  <strong className="inline-block w-32">Erstellt am</strong>{" "}
+                  {bill.createdAt
+                    ? new Date(bill.createdAt).toLocaleDateString("de-DE") +
+                      " " +
+                      new Date(bill.createdAt).toLocaleTimeString("de-DE", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "-"}
                 </li>
                 <li>
                   <strong className="inline-block w-32">IBAN</strong>{" "}

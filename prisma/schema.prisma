@@ -12,6 +12,7 @@ model Bill {
   id         Int         @id @default(autoincrement())
   trainerId  Int
   teamId     Int
+  userId     String
   iban       String?
   quarter    Int
   year       Int
@@ -22,6 +23,7 @@ model Bill {
   updatedAt  DateTime    @updatedAt
   team       Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
   trainer    Trainer     @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   events     BillEvent[]
 
   @@unique([trainerId, teamId, quarter, year])
@@ -113,6 +115,7 @@ model User {
   banExpires    DateTime?
   sessions      Session[]
   accounts      Account[]
+  bills         Bill[]
 
   @@unique([email])
   @@map("user")

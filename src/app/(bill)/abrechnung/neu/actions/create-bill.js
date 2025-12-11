@@ -2,9 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import { requireSession } from "@/lib/auth-helper";
 
 export async function createBillAction(billData) {
   try {
+    // Get current user session
+    const session = await requireSession();
+    const userId = session.user.id;
+
     // Validate required fields
     if (
       !billData.trainerId ||
@@ -44,6 +49,7 @@ export async function createBillAction(billData) {
       data: {
         trainerId: billData.trainerId,
         teamId: billData.teamId,
+        userId: userId,
         iban: billData.iban || null,
         quarter: billData.quarter,
         year: billData.year,
@@ -57,6 +63,7 @@ export async function createBillAction(billData) {
       include: {
         trainer: true,
         team: true,
+        user: true,
         events: true,
       },
     });

@@ -7,11 +7,16 @@ import prisma from "@/lib/prisma";
 import { hasRole } from "@/lib/roles";
 import { redirect } from "next/navigation";
 
-async function getBills() {
+async function getBills(session) {
+  const isAdminOrKassenwart =
+    hasRole(session, "admin") || hasRole(session, "kassenwart");
+
   const bills = await prisma.bill.findMany({
+    where: isAdminOrKassenwart ? {} : { userId: session.user.id },
     include: {
       trainer: true,
       team: true,
+      user: true,
     },
     orderBy: [{ year: "desc" }, { quarter: "desc" }],
   });
@@ -24,19 +29,16 @@ async function Abrechnung() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+  // Check if user logged in
+  if (!session) redirect("/signin");
 
-  // Check if user has admin role
-  if (!hasRole(session, "admin")) {
-    redirect("/");
-  }
-
-  const bills = await getBills();
+  const bills = await getBills(session);
 
   return (
     <div className="flex flex-col gap-6">
       <h1>Abrechnungen</h1>
       <Suspense fallback={<Skeleton />}>
-        <BillTable bills={bills} />
+        <BillTable bills={bills} session={session} />
       </Suspense>
     </div>
   );

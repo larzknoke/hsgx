@@ -11,6 +11,7 @@ export async function getBillDetailsAction(billId) {
     const bill = await prisma.bill.findUnique({
       where: { id: billId },
       include: {
+        user: true,
         trainer: true,
         team: true,
         events: {
