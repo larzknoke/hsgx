@@ -4,6 +4,7 @@ import { PrismaClient } from "../../generated/prisma/client";
 import { admin } from "better-auth/plugins";
 
 const prisma = new PrismaClient();
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -18,10 +19,9 @@ export const auth = betterAuth({
   },
   plugins: [
     admin({
-      // optional: defaultRole oder adminRole angeben, wenn du willst
       roles: ["admin", "kassenwart", "trainer"],
-      defaultRole: "trainer", // optional
-      adminRole: "admin", // optional
+      defaultRole: "trainer",
+      adminRole: "admin",
     }),
   ],
 });

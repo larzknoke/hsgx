@@ -98,7 +98,13 @@ export default function AccountPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Sitzungs-ID:</span>
-                <span className="font-mono text-xs">{session.session.id}</span>
+                <span className="font-mono ">{session.session.id}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Rolle:</span>
+                <span>
+                  {session.user.role.toLocaleUpperCase() || "Keine Rolle"}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Erstellt:</span>
