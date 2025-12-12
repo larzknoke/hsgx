@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { requireSession } from "@/lib/auth-helper";
+import { sendEmail } from "@/lib/email";
+import { billCreatedEmail } from "@/email/billCreatedEmail";
 
 export async function createBillAction(billData) {
   try {
@@ -67,6 +69,21 @@ export async function createBillAction(billData) {
         events: true,
       },
     });
+
+    // Send email notification
+    try {
+      const emailContent = billCreatedEmail(bill);
+      await sendEmail({
+        to: "info@larsknoke.com",
+        subject: emailContent.subject,
+        html: emailContent.html,
+        text: emailContent.text,
+      });
+      console.log("Bill creation email sent successfully");
+    } catch (emailError) {
+      console.error("Error sending bill creation email:", emailError);
+      // Don't fail the entire operation if email fails
+    }
 
     revalidatePath("/abrechnung");
 
