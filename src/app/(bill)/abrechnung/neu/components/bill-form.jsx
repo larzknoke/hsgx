@@ -30,7 +30,7 @@ import {
 } from "@/lib/trainerentgelte";
 import { formatCurrency } from "@/lib/utils";
 
-export default function BillForm({ trainers, teams }) {
+export default function BillForm({ trainers, teams, currentUser }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState(false);
   const [trainingSlots, setTrainingSlots] = useState([]);
@@ -45,7 +45,7 @@ export default function BillForm({ trainers, teams }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      trainer: "",
+      trainer: currentUser?.trainerId ? String(currentUser.trainerId) : "",
       mannschaft: "",
       iban: "",
     },

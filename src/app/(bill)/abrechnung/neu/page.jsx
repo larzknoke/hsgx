@@ -25,11 +25,15 @@ async function NewBill() {
   const session = await requireSession();
   const trainers = await getTrainers();
   const teams = await getTeams();
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { trainerId: true },
+  });
 
   return (
     <div className="flex flex-col gap-6">
       <h1>Neue Abrechnungen</h1>
-      <BillForm trainers={trainers} teams={teams} />
+      <BillForm trainers={trainers} teams={teams} currentUser={currentUser} />
     </div>
   );
 }
