@@ -1,6 +1,7 @@
 import BillForm from "./components/bill-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
+import { requireSession } from "@/lib/auth-helper";
 
 async function getTrainers() {
   const trainers = await prisma.trainer.findMany({
@@ -21,6 +22,7 @@ async function getTeams() {
 }
 
 async function NewBill() {
+  const session = await requireSession();
   const trainers = await getTrainers();
   const teams = await getTeams();
 

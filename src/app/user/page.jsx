@@ -2,9 +2,7 @@ import { Suspense } from "react";
 import UserTable from "./components/userTable";
 import prisma from "@/lib/prisma";
 import { Skeleton } from "@/components/ui/skeleton";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { requireSession } from "@/lib/auth-helper";
 import { hasRole } from "@/lib/roles";
 
 async function getUsers() {
@@ -26,11 +24,7 @@ async function getUsers() {
 }
 
 async function UserManagement() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) redirect("/signin");
+  const session = await requireSession();
 
   // Only allow admin users
   if (!hasRole(session, "admin")) {

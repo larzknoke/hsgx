@@ -2,9 +2,7 @@ import { Suspense } from "react";
 import TrainerTable from "./components/trainerTable";
 import prisma from "@/lib/prisma";
 import { Skeleton } from "@/components/ui/skeleton";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { requireSession } from "@/lib/auth-helper";
 
 async function getTrainers() {
   const trainers = await prisma.trainer.findMany({
@@ -21,10 +19,7 @@ async function getTrainers() {
 }
 
 async function Trainer() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session) redirect("/signin");
+  const session = await requireSession();
 
   const trainers = await getTrainers();
   return (

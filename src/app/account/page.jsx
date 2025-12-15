@@ -30,6 +30,11 @@ import { changePasswordAction } from "./actions/change-password";
 export default function AccountPage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+
+  if (!isPending && !session) {
+    router.push("/signin");
+    return null;
+  }
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",

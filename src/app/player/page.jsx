@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import PlayerTable from "./components/playerTable";
 import prisma from "@/lib/prisma";
 import { Skeleton } from "@/components/ui/skeleton";
+import { requireSession } from "@/lib/auth-helper";
 
 async function getPlayers() {
   const players = await prisma.player.findMany({
@@ -23,6 +24,7 @@ async function getTeams() {
 }
 
 async function Player() {
+  const session = await requireSession();
   const players = await getPlayers();
   const teams = await getTeams();
 

@@ -1,11 +1,9 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import BillTable from "./components/billTable";
 import prisma from "@/lib/prisma";
 import { hasRole } from "@/lib/roles";
-import { redirect } from "next/navigation";
+import { requireSession } from "@/lib/auth-helper";
 
 async function getBills(session) {
   const isAdminOrKassenwart =
@@ -26,11 +24,7 @@ async function getBills(session) {
 }
 
 async function Abrechnung() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  // Check if user logged in
-  if (!session) redirect("/signin");
+  const session = await requireSession();
 
   const bills = await getBills(session);
 

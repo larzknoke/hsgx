@@ -1,6 +1,8 @@
-import React from "react";
+import { requireSession } from "@/lib/auth-helper";
 
-function HomePage() {
+async function HomePage() {
+  const session = await requireSession();
+
   return <div>HomePage</div>;
 }
 
