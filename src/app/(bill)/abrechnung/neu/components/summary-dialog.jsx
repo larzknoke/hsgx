@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 import { createBillAction } from "../actions/create-bill";
 import { getTrainerHourlyRate } from "@/lib/trainerentgelte";
 import { formatCurrency } from "@/lib/utils";
@@ -206,7 +207,14 @@ export default function SummaryDialog({
             Abbrechen
           </Button>
           <Button onClick={handleSave} variant={"success"} disabled={isSaving}>
-            {isSaving ? "Speichern..." : "Abrechnung speichern"}
+            {isSaving ? (
+              <>
+                <Spinner className=" size-4" />
+                Speichern...
+              </>
+            ) : (
+              "Abrechnung speichern"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
