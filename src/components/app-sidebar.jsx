@@ -12,6 +12,7 @@ import {
   CakeSlice,
   User,
   UserCog,
+  Car,
 } from "lucide-react";
 
 import {
@@ -62,6 +63,12 @@ const items = [
     title: "Spieler",
     url: "/player",
     icon: User,
+  },
+  {
+    title: "Fahrkosten",
+    url: "#",
+    icon: Car,
+    disabled: true,
   },
   {
     title: "Verkauf",
