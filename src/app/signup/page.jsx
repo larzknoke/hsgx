@@ -24,6 +24,7 @@ export default function SignUpPage() {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,6 +33,15 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    // Check if passwords match
+    if (formData.password !== formData.confirmPassword) {
+      const message = "Passwörter stimmen nicht überein";
+      setError(message);
+      toast.error(message);
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await authClient.signUp.email(
@@ -132,8 +142,23 @@ export default function SignUpPage() {
                 Passwort muss mindestens 8 Zeichen lang sein
               </p>
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={(e) =>
+                  setFormData({ ...formData, confirmPassword: e.target.value })
+                }
+                required
+                minLength={8}
+                disabled={loading}
+              />
+            </div>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
+          <CardFooter className="flex flex-col space-y-4 mt-5">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Konto wird erstellt..." : "Registrieren"}
             </Button>
