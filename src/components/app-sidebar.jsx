@@ -104,7 +104,7 @@ export function AppSidebar() {
   const isAdmin = session && hasRole(session, "admin");
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="offcanvas">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

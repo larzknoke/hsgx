@@ -3,6 +3,7 @@ import PlayerTable from "./components/playerTable";
 import prisma from "@/lib/prisma";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireSession } from "@/lib/auth-helper";
+import { PageHeader } from "@/components/page-header";
 
 async function getPlayers() {
   const players = await prisma.player.findMany({
@@ -33,7 +34,7 @@ async function Player() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1>Spieler</h1>
+      <PageHeader title="Spieler" />
       <Suspense fallback={<Skeleton />}>
         <PlayerTable players={players} teams={teams} />
       </Suspense>

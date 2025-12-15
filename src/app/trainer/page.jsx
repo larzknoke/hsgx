@@ -3,6 +3,7 @@ import TrainerTable from "./components/trainerTable";
 import prisma from "@/lib/prisma";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireSession } from "@/lib/auth-helper";
+import { PageHeader } from "@/components/page-header";
 
 async function getTrainers() {
   const trainers = await prisma.trainer.findMany({
@@ -27,7 +28,7 @@ async function Trainer() {
   const trainers = await getTrainers();
   return (
     <div className="flex flex-col gap-6">
-      <h1>Trainer</h1>
+      <PageHeader title="Trainer" />
       <Suspense fallback={<Skeleton />}>
         <TrainerTable trainers={trainers} session={session} />
       </Suspense>

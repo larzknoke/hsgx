@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { requireSession } from "@/lib/auth-helper";
 import { hasRole } from "@/lib/roles";
 import { redirect } from "next/navigation";
+import { PageHeader } from "@/components/page-header";
 
 async function getUsers() {
   const users = await prisma.user.findMany({
@@ -45,7 +46,7 @@ async function UserManagement() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1>Benutzerverwaltung</h1>
+      <PageHeader title="Benutzerverwaltung" />
       <Suspense fallback={<Skeleton />}>
         <UserTable users={users} trainers={trainers} session={session} />
       </Suspense>

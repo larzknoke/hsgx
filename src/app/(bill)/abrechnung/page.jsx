@@ -4,6 +4,7 @@ import BillTable from "./components/billTable";
 import prisma from "@/lib/prisma";
 import { hasRole } from "@/lib/roles";
 import { requireSession } from "@/lib/auth-helper";
+import { PageHeader } from "@/components/page-header";
 
 async function getBills(session) {
   const isAdminOrKassenwart =
@@ -30,7 +31,7 @@ async function Abrechnung() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1>Abrechnungen</h1>
+      <PageHeader title="Abrechnungen" />
       <Suspense fallback={<Skeleton />}>
         <BillTable bills={bills} session={session} />
       </Suspense>

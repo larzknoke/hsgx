@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireSession } from "@/lib/auth-helper";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/page-header";
 
 async function getTeams() {
   const teams = await prisma.team.findMany({
@@ -40,7 +41,7 @@ async function Team() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1>Teams</h1>
+      <PageHeader title="Teams" />
       <Suspense fallback={<Skeleton />}>
         <TeamTable teams={teams} trainers={trainers} session={session} />
       </Suspense>

@@ -126,7 +126,7 @@
 }
 
 h1 {
-  @apply scroll-m-20 border-b pb-2 text-xl font-semibold tracking-tight first:mt-0;
+  @apply scroll-m-20 text-xl font-semibold tracking-tight first:mt-0;
 }
 
 .fc .fc-button {

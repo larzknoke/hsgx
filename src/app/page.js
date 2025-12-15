@@ -7,6 +7,7 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Volleyball } from "lucide-react";
 import Link from "next/link";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Home() {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function Home() {
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center gap-20  sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center">
+        <SidebarTrigger className="absolute top-6 right-6 md:hidden" />
         <div className="flex items-center justify-center">
           <Volleyball className="h-16 w-16 text-primary" />
         </div>
