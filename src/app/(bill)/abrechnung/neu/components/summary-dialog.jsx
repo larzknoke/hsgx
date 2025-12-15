@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createBillAction } from "../actions/create-bill";
 import { getTrainerHourlyRate } from "@/lib/trainerentgelte";
@@ -22,6 +23,7 @@ export default function SummaryDialog({
   teams,
 }) {
   const [isSaving, setIsSaving] = useState(false);
+  const router = useRouter();
 
   // Find trainer and team by ID
   const selectedTrainer = trainers?.find(
@@ -40,7 +42,7 @@ export default function SummaryDialog({
   };
 
   // Group events by location
-  const hourlyRate = selectedTrainer?.licenseType 
+  const hourlyRate = selectedTrainer?.licenseType
     ? getTrainerHourlyRate(selectedTrainer.licenseType)
     : 0;
 
@@ -116,6 +118,7 @@ export default function SummaryDialog({
       if (result.success) {
         toast.success("Abrechnung erfolgreich gespeichert!");
         onClose();
+        router.push("/abrechnung");
       } else {
         throw new Error(result.error);
       }
