@@ -30,6 +30,7 @@ import {
 import { useEffect } from "react";
 import { useTransition } from "react";
 import { updateUserAction } from "@/app/user/actions/update-user";
+import { setUserRoleAction } from "@/app/user/actions/set-user-role";
 import { toast } from "sonner";
 
 export default function UserEditDialog({ open, onClose, user }) {
@@ -71,15 +72,23 @@ export default function UserEditDialog({ open, onClose, user }) {
     if (!user) return;
 
     startTransition(async () => {
-      const formData = new FormData();
-      formData.append("id", user.id);
-      formData.append("name", data.name);
-      formData.append("email", data.email);
-      if (data.role) formData.append("role", data.role);
-      formData.append("banned", data.banned.toString());
-      if (data.banReason) formData.append("banReason", data.banReason);
-
       try {
+        // Update user role using Better Auth admin API if role has changed
+        if (data.role && data.role !== user.role) {
+          const roleFormData = new FormData();
+          roleFormData.append("userId", user.id);
+          roleFormData.append("role", data.role);
+          await setUserRoleAction(roleFormData);
+        }
+
+        // Update other user data
+        const formData = new FormData();
+        formData.append("id", user.id);
+        formData.append("name", data.name);
+        formData.append("email", data.email);
+        formData.append("banned", data.banned.toString());
+        if (data.banReason) formData.append("banReason", data.banReason);
+
         await updateUserAction(formData);
         toast.success("Benutzer erfolgreich aktualisiert");
         onClose();
@@ -150,7 +159,7 @@ export default function UserEditDialog({ open, onClose, user }) {
                 )}
               />
 
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name="role"
                 render={({ field }) => (
@@ -166,12 +175,11 @@ export default function UserEditDialog({ open, onClose, user }) {
                             <SelectValue placeholder="Rolle auswählen..." />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">Keine Rolle</SelectItem>
-                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="trainer">Trainer</SelectItem>
                             <SelectItem value="kassenwart">
                               Kassenwart
                             </SelectItem>
-                            <SelectItem value="trainer">Trainer</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -179,7 +187,7 @@ export default function UserEditDialog({ open, onClose, user }) {
                     </div>
                   </FormItem>
                 )}
-              /> */}
+              />
 
               <FormField
                 control={form.control}

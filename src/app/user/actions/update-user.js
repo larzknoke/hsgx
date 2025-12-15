@@ -8,7 +8,6 @@ const schema = z.object({
   id: z.string(),
   name: z.string().min(1, "Name ist erforderlich"),
   email: z.string().email("Ungültige E-Mail-Adresse"),
-  role: z.string().optional(),
   banned: z.boolean(),
   banReason: z.string().optional(),
 });
@@ -21,7 +20,6 @@ export async function updateUserAction(formData) {
     id: data.id,
     name: data.name,
     email: data.email,
-    role: data.role || undefined,
     banned: data.banned === "true",
     banReason: data.banReason || undefined,
   });
@@ -35,7 +33,6 @@ export async function updateUserAction(formData) {
     data: {
       name: parsed.data.name,
       email: parsed.data.email,
-      role: parsed.data.role || null,
       banned: parsed.data.banned,
       banReason: parsed.data.banReason || null,
     },
