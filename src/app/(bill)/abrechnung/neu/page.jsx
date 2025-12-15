@@ -2,6 +2,7 @@ import BillForm from "./components/bill-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
 import { requireSession } from "@/lib/auth-helper";
+import { PageHeader } from "@/components/page-header";
 
 async function getTrainers() {
   const trainers = await prisma.trainer.findMany({
@@ -49,7 +50,7 @@ async function NewBill() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1>Neue Abrechnungen</h1>
+      <PageHeader title="Neue Abrechnung" />
       <BillForm
         trainers={trainers}
         teams={teams}
