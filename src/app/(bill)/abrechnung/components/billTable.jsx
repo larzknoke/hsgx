@@ -100,6 +100,7 @@ function BillTable({ bills, session }) {
               <TableHead>Übungsleiter</TableHead>
               <TableHead>Mannschaft</TableHead>
               <TableHead>Quartal</TableHead>
+              <TableHead>Erstellt am</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Betrag</TableHead>
             </TableRow>
@@ -108,7 +109,7 @@ function BillTable({ bills, session }) {
             {filteredBills.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="text-center text-muted-foreground"
                 >
                   {searchTerm
@@ -130,6 +131,9 @@ function BillTable({ bills, session }) {
                   <TableCell>{bill.team.name}</TableCell>
                   <TableCell>
                     {formatQuarter(bill.quarter, bill.year)}
+                  </TableCell>
+                  <TableCell>
+                    {new Date(bill.createdAt).toLocaleDateString("de-DE")}
                   </TableCell>
                   <TableCell>
                     {bill.status === "paid" ? (

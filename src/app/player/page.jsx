@@ -13,6 +13,9 @@ async function getPlayers() {
         },
       },
     },
+    orderBy: {
+      name: "asc",
+    },
   });
   console.log("Fetched players:", players);
   return players;

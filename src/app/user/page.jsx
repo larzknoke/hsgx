@@ -17,7 +17,7 @@ async function getUsers() {
       accounts: true,
     },
     orderBy: {
-      createdAt: "desc",
+      name: "asc",
     },
   });
   return users;

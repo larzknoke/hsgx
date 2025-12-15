@@ -126,16 +126,7 @@ export default function BillForm({ trainers, teams }) {
                                       key={trainer.id}
                                       value={trainer.id.toString()}
                                     >
-                                      {trainer.name}{" "}
-                                      {trainer.licenseType
-                                        ? `(${getTrainerLicenseLabel(
-                                            trainer.licenseType
-                                          )} - ${formatCurrency(
-                                            getTrainerHourlyRate(
-                                              trainer.licenseType
-                                            )
-                                          )})`
-                                        : ""}
+                                      {trainer.name}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>

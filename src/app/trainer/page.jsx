@@ -13,6 +13,9 @@ async function getTrainers() {
         },
       },
     },
+    orderBy: {
+      name: "asc",
+    },
   });
   console.log("Fetched trainers:", trainers);
   return trainers;

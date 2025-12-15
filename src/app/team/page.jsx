@@ -19,6 +19,9 @@ async function getTeams() {
         },
       },
     },
+    orderBy: {
+      name: "asc",
+    },
   });
   console.log("Fetched teams:", teams);
   return teams;
