@@ -15,30 +15,10 @@ export function getTrainerLicenseLabel(licenseType) {
   return TRAINER_LICENSE_TYPES[licenseType]?.label || "-";
 }
 
-// Legacy export for backwards compatibility
-export const trainerEntgelte = [
-  {
-    rolle: "Helfer",
-    verguetung: 5.0,
-  },
-  {
-    rolle: "ÜL ohne Lizenz",
-    verguetung: 7.5,
-  },
-  {
-    rolle: "ÜL mit Kinderhandballtrainer",
-    verguetung: 10.0,
-  },
-  {
-    rolle: "ÜL mit C Lizenz",
-    verguetung: 12.5,
-  },
-  {
-    rolle: "ÜL mit B Lizenz",
-    verguetung: 15.0,
-  },
-  {
-    rolle: "ÜL mit A Lizenz",
-    verguetung: 20.0,
-  },
-];
+// Legacy export for backwards compatibility - derived from TRAINER_LICENSE_TYPES
+export const trainerEntgelte = Object.values(TRAINER_LICENSE_TYPES).map(
+  ({ label, hourlyRate }) => ({
+    rolle: label,
+    verguetung: hourlyRate,
+  })
+);
