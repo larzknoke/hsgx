@@ -30,10 +30,32 @@ async function NewBill() {
     select: { trainerId: true },
   });
 
+  let preselectedTeamId = null;
+  if (currentUser?.trainerId) {
+    const trainerWithTeams = await prisma.trainer.findUnique({
+      where: { id: currentUser.trainerId },
+      select: {
+        trainerTeams: {
+          select: { teamId: true },
+        },
+      },
+    });
+    const teamIds =
+      trainerWithTeams?.trainerTeams?.map((tt) => tt.teamId) || [];
+    if (teamIds.length === 1) {
+      preselectedTeamId = teamIds[0];
+    }
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <h1>Neue Abrechnungen</h1>
-      <BillForm trainers={trainers} teams={teams} currentUser={currentUser} />
+      <BillForm
+        trainers={trainers}
+        teams={teams}
+        currentUser={currentUser}
+        preselectedTeamId={preselectedTeamId}
+      />
     </div>
   );
 }
