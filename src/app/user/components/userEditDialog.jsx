@@ -33,7 +33,7 @@ import { updateUserAction } from "@/app/user/actions/update-user";
 import { setUserRoleAction } from "@/app/user/actions/set-user-role";
 import { toast } from "sonner";
 
-export default function UserEditDialog({ open, onClose, user }) {
+export default function UserEditDialog({ open, onClose, user, trainers = [] }) {
   const [isPending, startTransition] = useTransition();
 
   const formSchema = z.object({
@@ -42,6 +42,7 @@ export default function UserEditDialog({ open, onClose, user }) {
     role: z.string().optional(),
     banned: z.boolean().default(false),
     banReason: z.string().optional(),
+    trainerId: z.string().optional(),
   });
 
   const form = useForm({
@@ -52,6 +53,7 @@ export default function UserEditDialog({ open, onClose, user }) {
       role: "",
       banned: false,
       banReason: "",
+      trainerId: "",
     },
   });
 
@@ -64,6 +66,7 @@ export default function UserEditDialog({ open, onClose, user }) {
         role: user.role || "",
         banned: user.banned || false,
         banReason: user.banReason || "",
+        trainerId: user.trainerId ? String(user.trainerId) : "",
       });
     }
   }, [user, form]);
@@ -88,6 +91,9 @@ export default function UserEditDialog({ open, onClose, user }) {
         formData.append("email", data.email);
         formData.append("banned", data.banned.toString());
         if (data.banReason) formData.append("banReason", data.banReason);
+        if (data.trainerId && data.trainerId !== "none") {
+          formData.append("trainerId", data.trainerId);
+        }
 
         await updateUserAction(formData);
         toast.success("Benutzer erfolgreich aktualisiert");
@@ -106,6 +112,7 @@ export default function UserEditDialog({ open, onClose, user }) {
         role: user.role || "",
         banned: user.banned || false,
         banReason: user.banReason || "",
+        trainerId: user.trainerId ? String(user.trainerId) : "",
       });
     }
   }
@@ -180,6 +187,39 @@ export default function UserEditDialog({ open, onClose, user }) {
                               Kassenwart
                             </SelectItem>
                             <SelectItem value="admin">Admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="trainerId"
+                render={({ field }) => (
+                  <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                    <FormLabel className="flex shrink-0">
+                      Zugeordneter Trainer
+                    </FormLabel>
+                    <div className="w-full">
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Trainer auswählen..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {trainers.map((t) => (
+                              <SelectItem key={t.id} value={String(t.id)}>
+                                {t.name}
+                              </SelectItem>
+                            ))}
+                            <SelectItem value="none">Kein Trainer</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>

@@ -87,6 +87,8 @@ model Trainer {
   licenseType  String?
   Bill         Bill[]
   trainerTeams TrainerTeamRelation[]
+
+  users User[]
 }
 
 model TrainerTeamRelation {
@@ -116,6 +118,8 @@ model User {
   sessions      Session[]
   accounts      Account[]
   bills         Bill[]
+  trainerId     Int?
+  trainer       Trainer?  @relation(fields: [trainerId], references: [id], onDelete: SetNull)
 
   @@unique([email])
   @@map("user")

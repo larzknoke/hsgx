@@ -23,7 +23,7 @@ import UserListDropdown from "./userListDropdown";
 import UserDeleteDialog from "./userDeleteDialog";
 import UserEditDialog from "./userEditDialog";
 
-function UserTable({ users, session }) {
+function UserTable({ users, trainers = [], session }) {
   const router = useRouter();
   const [deleteDialogState, setDeleteDialogState] = useState({
     open: false,
@@ -90,6 +90,7 @@ function UserTable({ users, session }) {
             <TableHead>Name</TableHead>
             <TableHead>E-Mail</TableHead>
             <TableHead>Rolle</TableHead>
+            <TableHead>Trainer</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Erstellt am</TableHead>
             <TableHead>Letzte Anmeldung</TableHead>
@@ -102,6 +103,7 @@ function UserTable({ users, session }) {
               <TableCell className="font-medium">{user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{getRoleBadge(user.role)}</TableCell>
+              <TableCell>{user.trainer?.name ?? "-"}</TableCell>
               <TableCell>{getStatusBadge(user)}</TableCell>
               <TableCell>{formatDate(user.createdAt)}</TableCell>
               <TableCell>
@@ -130,6 +132,7 @@ function UserTable({ users, session }) {
       <UserEditDialog
         open={editDialogState.open}
         user={editDialogState.user}
+        trainers={trainers}
         onClose={() => {
           setEditDialogState({ open: false, user: null });
           router.refresh();
