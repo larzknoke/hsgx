@@ -75,7 +75,7 @@ export async function createBillAction(billData) {
       const emailContent = billCreatedEmail(bill);
       await sendEmail({
         to: process.env.ADMIN_EMAIL || process.env.KASSENWART_EMAIL,
-        cc: session.user.email,
+        cc: session.user?.email || undefined,
         subject: emailContent.subject,
         html: emailContent.html,
         text: emailContent.text,
