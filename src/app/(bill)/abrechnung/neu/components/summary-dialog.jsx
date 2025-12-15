@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
+import { toast } from "sonner";
 import { createBillAction } from "../actions/create-bill";
 import { getTrainerHourlyRate } from "@/lib/trainerentgelte";
 import { formatCurrency } from "@/lib/utils";
@@ -113,14 +114,14 @@ export default function SummaryDialog({
       const result = await createBillAction(billData);
 
       if (result.success) {
-        alert("Abrechnung erfolgreich gespeichert!");
+        toast.success("Abrechnung erfolgreich gespeichert!");
         onClose();
       } else {
         throw new Error(result.error);
       }
     } catch (error) {
       console.error("Error saving bill:", error);
-      alert("Fehler beim Speichern der Abrechnung: " + error.message);
+      toast.error("Fehler beim Speichern der Abrechnung: " + error.message);
     } finally {
       setIsSaving(false);
     }
