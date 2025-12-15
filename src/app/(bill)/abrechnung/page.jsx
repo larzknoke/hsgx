@@ -16,7 +16,7 @@ async function getBills(session) {
       team: true,
       user: true,
     },
-    orderBy: [{ year: "desc" }, { quarter: "desc" }],
+    orderBy: [{ createdAt: "desc" }],
   });
 
   console.log("Fetched bills:", bills);
