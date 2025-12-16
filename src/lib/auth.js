@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { PrismaClient } from "../../generated/prisma/client";
 import { admin } from "better-auth/plugins";
 import { sendEmail } from "./email.js";
+import { localization } from "better-auth-localization";
 
 const prisma = new PrismaClient();
 
@@ -79,6 +80,10 @@ export const auth = betterAuth({
       roles: ["admin", "kassenwart", "trainer"],
       defaultRole: "trainer",
       adminRole: "admin",
+    }),
+    localization({
+      defaultLocale: "de-DE", // Use built-in German translations
+      fallbackLocale: "default", // Fallback to English
     }),
   ],
   databaseHooks: {
