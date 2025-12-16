@@ -56,6 +56,13 @@ export default function SignInPage() {
               router.push("/auth/verify-email-pending");
               return;
             }
+            if (code === "INVALID_EMAIL_OR_PASSWORD") {
+              const message = "Ungültige E-Mail oder Passwort";
+              setError(message);
+              toast.error(message);
+              setLoading(false);
+              return;
+            }
             const message = ctx?.error?.message || "Ein Fehler ist aufgetreten";
             setError(message);
             toast.error(message);
