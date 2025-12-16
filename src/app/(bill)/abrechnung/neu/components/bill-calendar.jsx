@@ -236,7 +236,11 @@ export default function BillCalendar({
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className={"flex justify-between"}>
+          <CardTitle
+            className={
+              "flex flex-col md:flex-row gap-4 md:gap-0 justify-between"
+            }
+          >
             Trainingsplan
             <ButtonGroup>
               {quarters.map((quarter) => (

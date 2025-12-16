@@ -90,8 +90,8 @@ export default function BillForm({
 
   return (
     <>
-      <div className="flex flex-row gap-6">
-        <div className="w-1/2 ">
+      <div className="flex  md:flex-row gap-6 flex-col-reverse">
+        <div className="w-full md:w-1/2 ">
           <Card>
             <CardHeader>
               <CardTitle>Stammdaten</CardTitle>
@@ -225,7 +225,7 @@ export default function BillForm({
             <pre>{JSON.stringify(finalEvents, null, 2)}</pre>
           </div> */}
         </div>
-        <div className="w-1/2 gap-4 flex flex-col">
+        <div className="w-full md:w-1/2 gap-4 flex flex-col">
           <TrainingSlots
             trainingSlots={trainingSlots}
             trainingSlotForm={trainingSlotForm}
