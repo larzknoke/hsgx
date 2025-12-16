@@ -8,7 +8,10 @@ export function LayoutWrapper({ children }) {
   const pathname = usePathname();
 
   // Don't show sidebar on auth pages
-  const isAuthPage = pathname === "/signin" || pathname === "/signup";
+  const isAuthPage =
+    pathname === "/signin" ||
+    pathname === "/signup" ||
+    pathname === "/auth/verify-email-pending";
 
   if (isAuthPage) {
     return <>{children}</>;

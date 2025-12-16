@@ -49,6 +49,13 @@ export default function SignInPage() {
             router.push("/");
           },
           onError: (ctx) => {
+            console.log(ctx?.error);
+            const code = ctx?.error?.code;
+            if (code === "EMAIL_NOT_VERIFIED") {
+              setLoading(false);
+              router.push("/auth/verify-email-pending");
+              return;
+            }
             const message = ctx?.error?.message || "Ein Fehler ist aufgetreten";
             setError(message);
             toast.error(message);

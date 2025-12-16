@@ -16,9 +16,7 @@ import { Mail, LogOut } from "lucide-react";
 import Link from "next/link";
 
 export default function VerifyEmailPendingPage() {
-  const router = useRouter();
   const [userEmail, setUserEmail] = useState("");
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getSession = async () => {
@@ -29,22 +27,6 @@ export default function VerifyEmailPendingPage() {
     };
     getSession();
   }, []);
-
-  const handleSignOut = async () => {
-    setLoading(true);
-    try {
-      await authClient.signOut({
-        fetchOptions: {
-          onSuccess: () => {
-            router.push("/signin");
-          },
-        },
-      });
-    } catch (error) {
-      console.error("Sign out error:", error);
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -87,15 +69,12 @@ export default function VerifyEmailPendingPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={handleSignOut}
-            disabled={loading}
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            {loading ? "Wird abgemeldet..." : "Abmelden"}
-          </Button>
+          <Link href="/signin" className="w-full">
+            <Button variant="outline" className="w-full">
+              <LogOut className="w-4 h-4 mr-2" />
+              Anmelden
+            </Button>
+          </Link>
           <p className="text-xs text-center text-muted-foreground">
             <Link href="/" className="text-primary hover:underline">
               Zurück zur Startseite
