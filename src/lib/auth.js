@@ -24,4 +24,24 @@ export const auth = betterAuth({
       adminRole: "admin",
     }),
   ],
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          // Send notification email to admin when a new user signs up
+          try {
+            const { sendAdminNewUserNotification } =
+              await import("./send-new-user-email.js");
+            await sendAdminNewUserNotification(user);
+          } catch (error) {
+            console.error(
+              "Error sending admin notification for new signup:",
+              error
+            );
+            // Don't throw - we don't want to fail the signup if email fails
+          }
+        },
+      },
+    },
+  },
 });
