@@ -28,6 +28,7 @@ export default function SignUpPage() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,7 +57,11 @@ export default function SignUpPage() {
             setLoading(true);
           },
           onSuccess: () => {
-            router.push("/");
+            setVerificationSent(true);
+            setLoading(false);
+            toast.success(
+              "Registrierung erfolgreich! Bitte überprüfen Sie Ihre E-Mails."
+            );
           },
           onError: (ctx) => {
             console.log("Sign-up error context:", ctx);
@@ -74,6 +79,49 @@ export default function SignUpPage() {
       setLoading(false);
     }
   };
+
+  if (verificationSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <div className="flex items-center justify-center">
+              <Volleyball className="h-12 w-12 text-primary" />
+            </div>
+            <CardTitle className="text-2xl text-center">
+              E-Mail-Verifizierung
+            </CardTitle>
+            <CardDescription className="text-center">
+              Überprüfen Sie Ihr Postfach
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+              <p className="text-sm text-blue-900 text-center">
+                Wir haben Ihnen eine E-Mail mit einem Bestätigungslink an{" "}
+                <strong>{formData.email}</strong> gesendet.
+              </p>
+              <p className="text-sm text-blue-900 text-center mt-2">
+                Bitte klicken Sie auf den Link in der E-Mail, um Ihr Konto zu
+                aktivieren.
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              Haben Sie die E-Mail nicht erhalten? Überprüfen Sie bitte auch
+              Ihren Spam-Ordner.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Link href="/signin" className="w-full">
+              <Button variant="outline" className="w-full">
+                Zurück zur Anmeldung
+              </Button>
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
