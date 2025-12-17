@@ -129,24 +129,87 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Formulare</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a
-                      href={item.url}
-                      className={
-                        item.disabled ? "pointer-events-none opacity-30" : ""
-                      }
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items
+                .filter((item) =>
+                  ["Abrechnung", "Fahrkosten (in Arbeit)"].includes(item.title)
+                )
+                .map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a
+                        href={item.url}
+                        className={
+                          item.disabled ? "pointer-events-none opacity-30" : ""
+                        }
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Mannschaften & Co</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items
+                .filter((item) =>
+                  ["Trainer", "Teams", "Spieler"].includes(item.title)
+                )
+                .map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a
+                        href={item.url}
+                        className={
+                          item.disabled ? "pointer-events-none opacity-30" : ""
+                        }
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Weitere</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items
+                .filter(
+                  (item) =>
+                    ![
+                      "Abrechnung",
+                      "Fahrkosten (in Arbeit)",
+                      "Trainer",
+                      "Teams",
+                      "Spieler",
+                    ].includes(item.title)
+                )
+                .map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a
+                        href={item.url}
+                        className={
+                          item.disabled ? "pointer-events-none opacity-30" : ""
+                        }
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
