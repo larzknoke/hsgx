@@ -137,7 +137,7 @@ export default function TravelReportForm({ teams, currentUser }) {
                     <FormItem>
                       <FormLabel>Ziel</FormLabel>
                       <FormControl>
-                        <Input placeholder="z.B. Berlin" {...field} />
+                        <Input placeholder="z.B. Hameln" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -151,10 +151,7 @@ export default function TravelReportForm({ teams, currentUser }) {
                     <FormItem>
                       <FormLabel>Grund (optional)</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="z.B. Turnier, Training"
-                          {...field}
-                        />
+                        <Input placeholder="z.B. Spiel, Turnier" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
