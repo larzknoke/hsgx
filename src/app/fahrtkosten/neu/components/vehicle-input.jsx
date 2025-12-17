@@ -13,11 +13,15 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function VehicleInput({ vehicles, onVehiclesChange }) {
   const addVehicle = () => {
+    // Get the distance from the first vehicle if it exists
+    const firstVehicleDistance =
+      vehicles.length > 0 ? vehicles[0].distance : "";
+
     onVehiclesChange([
       ...vehicles,
       {
         driver: "",
-        distance: "",
+        distance: firstVehicleDistance,
         noCharge: false,
       },
     ]);
