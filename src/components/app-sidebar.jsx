@@ -65,10 +65,9 @@ const items = [
     icon: User,
   },
   {
-    title: "Fahrkosten",
-    url: "#",
+    title: "Fahrkosten (in Arbeit)",
+    url: "/fahrtkosten",
     icon: Car,
-    disabled: true,
   },
   {
     title: "Verkauf",

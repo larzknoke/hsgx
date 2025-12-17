@@ -76,6 +76,8 @@ model Team {
   bills        Bill[]
   playerTeams  PlayerTeamRelation[]
   trainerTeams TrainerTeamRelation[]
+
+  travelReports TravelReport[]
 }
 
 model Trainer {
@@ -104,22 +106,23 @@ model TrainerTeamRelation {
 }
 
 model User {
-  id            String    @id
+  id            String         @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean        @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   role          String?
-  banned        Boolean?  @default(false)
+  banned        Boolean?       @default(false)
   banReason     String?
   banExpires    DateTime?
   sessions      Session[]
   accounts      Account[]
   bills         Bill[]
   trainerId     Int?
-  trainer       Trainer?  @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  trainer       Trainer?       @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  travelReports TravelReport[]
 
   @@unique([email])
   @@map("user")
@@ -172,4 +175,36 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model TravelReport {
+  id          Int       @id @default(autoincrement())
+  travelDate  DateTime
+  reason      String?
+  destination String
+  distance    Float
+  teamId      Int
+  userId      String
+  totalCost   Float
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicles    Vehicle[]
+
+  @@index([teamId, travelDate])
+}
+
+model Vehicle {
+  id             Int          @id @default(autoincrement())
+  travelReportId Int
+  driver         String?
+  distance       Float
+  cost           Float
+  noCharge       Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  travelReport   TravelReport @relation(fields: [travelReportId], references: [id], onDelete: Cascade)
+
+  @@index([travelReportId])
 }

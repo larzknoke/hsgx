@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatQuarter } from "@/lib/utils";
+import { hasRole } from "@/lib/roles";
 import {
   Tooltip,
   TooltipContent,
@@ -38,10 +39,7 @@ function BillTable({ bills, session }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const isAdminOrKassenwart =
-    session?.user?.role === "admin" ||
-    session?.user?.role === "kassenwart" ||
-    session?.user?.role?.split(",").includes("admin") ||
-    session?.user?.role?.split(",").includes("kassenwart");
+    hasRole(session, "admin") || hasRole(session, "kassenwart");
 
   const handleRowClick = (billId) => {
     setSelectedBillId(billId);
