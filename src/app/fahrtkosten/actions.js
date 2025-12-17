@@ -29,6 +29,7 @@ export async function createTravelReport(data) {
         teamId: parseInt(teamId),
         userId: session.user.id,
         totalCost: parseFloat(totalCost),
+        status: "unpaid",
         vehicles: {
           create: vehicles.map((vehicle) => {
             const cost = vehicle.noCharge

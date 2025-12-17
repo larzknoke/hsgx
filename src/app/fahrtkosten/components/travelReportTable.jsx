@@ -16,7 +16,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { PlusIcon, Trash2 } from "lucide-react";
+import { CheckCircle2, PlusIcon, Trash2, CircleAlert } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
 import { hasRole } from "@/lib/roles";
@@ -101,6 +101,7 @@ function TravelReportTable({ travelReports, session }) {
               <TableHead>Benutzer</TableHead>
               <TableHead>Fahrtdatum</TableHead>
               <TableHead>Erstellt am</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead className="text-right">Distanz (km)</TableHead>
               <TableHead className="text-right">Betrag</TableHead>
               <TableHead className="text-center">Aktionen</TableHead>
@@ -110,7 +111,7 @@ function TravelReportTable({ travelReports, session }) {
             {filteredReports.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={9}
+                  colSpan={10}
                   className="text-center text-muted-foreground"
                 >
                   {searchTerm
@@ -130,6 +131,33 @@ function TravelReportTable({ travelReports, session }) {
                   </TableCell>
                   <TableCell>
                     {new Date(report.createdAt).toLocaleDateString("de-DE")}
+                  </TableCell>
+                  <TableCell>
+                    {report.status === "paid" ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <CheckCircle2
+                            className="text-green-700"
+                            size={"22px"}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Bezahlt</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <CircleAlert
+                            className="text-yellow-600"
+                            size={"22px"}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Ausstehend</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
                     {report.distance}

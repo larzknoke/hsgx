@@ -186,6 +186,7 @@ model TravelReport {
   teamId      Int
   userId      String
   totalCost   Float
+  status      String    @default("unpaid")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
