@@ -111,6 +111,7 @@ function PlayerTable({ players, teams }) {
                   <TableHead>Name</TableHead>
                   <TableHead>Jahrgang</TableHead>
                   <TableHead>Geschlecht</TableHead>
+                  <TableHead>Stammverein</TableHead>
                   <TableHead>Teams</TableHead>
                   <TableHead className="text-right"></TableHead>
                 </TableRow>
@@ -124,6 +125,7 @@ function PlayerTable({ players, teams }) {
                       {new Date(player.birthday).getFullYear()}
                     </TableCell>
                     <TableCell>{player.gender || "-"}</TableCell>
+                    <TableCell>{player.stammverein || "-"}</TableCell>
                     <TableCell>
                       {player.playerTeams.map((pt) => pt.team.name).join(", ")}
                     </TableCell>

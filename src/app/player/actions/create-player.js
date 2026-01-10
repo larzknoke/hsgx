@@ -8,6 +8,7 @@ const schema = z.object({
   name: z.string().min(1, "Name ist erforderlich"),
   birthday: z.string().optional(),
   gender: z.string().optional(),
+  stammverein: z.string().optional(),
   teamIds: z.array(z.number()).optional().default([]),
 });
 
@@ -22,6 +23,7 @@ export async function createPlayerAction(formData) {
     name: data.name,
     birthday: data.birthday || undefined,
     gender: data.gender || undefined,
+    stammverein: data.stammverein || undefined,
     teamIds: teamIds,
   });
 
@@ -34,6 +36,7 @@ export async function createPlayerAction(formData) {
       name: parsed.data.name,
       birthday: parsed.data.birthday ? new Date(parsed.data.birthday) : null,
       gender: parsed.data.gender || null,
+      stammverein: parsed.data.stammverein || null,
       playerTeams: {
         create: parsed.data.teamIds.map((teamId) => ({
           team: { connect: { id: teamId } },
