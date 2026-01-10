@@ -14,6 +14,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { createBillAction } from "../actions/create-bill";
 import { getTrainerHourlyRate } from "@/lib/trainerentgelte";
 import { formatCurrency } from "@/lib/utils";
+import { getLocationLabel } from "@/lib/training-locations";
 
 export default function SummaryDialog({
   isOpen,
@@ -179,7 +180,7 @@ export default function SummaryDialog({
                   ([location, group], index) => (
                     <tr key={index}>
                       <td className="border-b border-gray-300 px-4 py-2">
-                        {location}
+                        {getLocationLabel(location.toLowerCase())}
                       </td>
                       <td className="border-b border-gray-300 px-4 py-2">
                         {group.count}

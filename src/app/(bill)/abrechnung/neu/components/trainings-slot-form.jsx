@@ -7,6 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { TRAINING_LOCATIONS } from "@/lib/training-locations";
 import {
   Select,
   SelectContent,
@@ -93,11 +94,14 @@ function TrainingSlotFormComp({
                             <SelectValue placeholder="Ort auswählen..." />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="bbs">BBS Halle</SelectItem>
-                            <SelectItem value="liebig">Liebighalle</SelectItem>
-                            <SelectItem value="billerbeck">
-                              Billerbeckhalle
-                            </SelectItem>
+                            {TRAINING_LOCATIONS.map((location) => (
+                              <SelectItem
+                                key={location.value}
+                                value={location.value}
+                              >
+                                {location.label}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </FormControl>
