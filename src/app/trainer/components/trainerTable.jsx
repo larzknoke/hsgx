@@ -53,6 +53,22 @@ function TrainerTable({ trainers, session }) {
   const closeEditDialog = () =>
     setEditDialogState({ open: false, trainer: null });
 
+  // Group trainers by stammverein
+  const trainersByStammverein = trainers.reduce((acc, trainer) => {
+    const stammverein = trainer.stammverein || "Kein Stammverein";
+    if (!acc[stammverein]) acc[stammverein] = [];
+    acc[stammverein].push(trainer);
+    return acc;
+  }, {});
+
+  // Sort stammverein alphabetically and sort trainers within each group by name
+  const sortedStammvereine = Object.keys(trainersByStammverein).sort();
+  sortedStammvereine.forEach((stammverein) => {
+    trainersByStammverein[stammverein].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+  });
+
   return (
     <>
       <div className="w-full flex flex-row gap-6 justify-between">
@@ -70,55 +86,64 @@ function TrainerTable({ trainers, session }) {
           <PlusIcon /> Neuer Trainer
         </Button>
       </div>
-      <Table>
-        <TableCaption>Alle Abrechnungen - Update 14.10.2025</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Trainer</TableHead>
-            <TableHead>Teams</TableHead>
-            <TableHead>Stammverein</TableHead>
-            {isAdminOrKassenwart && <TableHead>Lizenz</TableHead>}
-            {isAdminOrKassenwart && <TableHead>€/h</TableHead>}
-            <TableHead className="text-right"></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {trainers.map((trainer) => (
-            <TableRow key={trainer.id}>
-              <TableCell className="font-medium">{trainer.id}</TableCell>
-              <TableCell className="font-medium">{trainer.name}</TableCell>
-              <TableCell>
-                {trainer.trainerTeams?.map((tt) => tt.team.name).join(", ") ||
-                  "-"}
-              </TableCell>
-              <TableCell>{trainer.stammverein || "-"}</TableCell>
-              {isAdminOrKassenwart && (
-                <TableCell>
-                  {getTrainerLicenseLabel(trainer.licenseType)}
-                </TableCell>
-              )}
-              {isAdminOrKassenwart && (
-                <TableCell>
-                  {trainer.licenseType
-                    ? `${getTrainerHourlyRate(trainer.licenseType).toFixed(
-                        2
-                      )} €`
-                    : "-"}
-                </TableCell>
-              )}
-              <TableCell className="text-right">
-                {isAdminOrKassenwart && (
-                  <TrainerListDropdown
-                    onDeleteClick={() => openDeleteDialog(trainer)}
-                    onEditClick={() => openEditDialog(trainer)}
-                  />
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <div className="space-y-8">
+        {sortedStammvereine.map((stammverein) => (
+          <div key={stammverein}>
+            <h3 className="text-lg font-semibold mb-2">{stammverein}</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Trainer</TableHead>
+                  <TableHead>Teams</TableHead>
+                  <TableHead>Stammverein</TableHead>
+                  {isAdminOrKassenwart && <TableHead>Lizenz</TableHead>}
+                  {isAdminOrKassenwart && <TableHead>€/h</TableHead>}
+                  <TableHead className="text-right"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {trainersByStammverein[stammverein].map((trainer) => (
+                  <TableRow key={`${stammverein}-${trainer.id}`}>
+                    <TableCell className="font-medium">{trainer.id}</TableCell>
+                    <TableCell className="font-medium">
+                      {trainer.name}
+                    </TableCell>
+                    <TableCell>
+                      {trainer.trainerTeams
+                        ?.map((tt) => tt.team.name)
+                        .join(", ") || "-"}
+                    </TableCell>
+                    <TableCell>{trainer.stammverein || "-"}</TableCell>
+                    {isAdminOrKassenwart && (
+                      <TableCell>
+                        {getTrainerLicenseLabel(trainer.licenseType)}
+                      </TableCell>
+                    )}
+                    {isAdminOrKassenwart && (
+                      <TableCell>
+                        {trainer.licenseType
+                          ? `${getTrainerHourlyRate(
+                              trainer.licenseType
+                            ).toFixed(2)} €`
+                          : "-"}
+                      </TableCell>
+                    )}
+                    <TableCell className="text-right">
+                      {isAdminOrKassenwart && (
+                        <TrainerListDropdown
+                          onDeleteClick={() => openDeleteDialog(trainer)}
+                          onEditClick={() => openEditDialog(trainer)}
+                        />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ))}
+      </div>
       <TrainerDeleteDialog
         open={deleteDialogState.open}
         trainer={deleteDialogState.trainer}
