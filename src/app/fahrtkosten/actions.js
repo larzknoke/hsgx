@@ -2,6 +2,8 @@
 
 import prisma from "@/lib/prisma";
 import { requireSession } from "@/lib/auth-helper";
+import { sendEmail } from "@/lib/email";
+import { travelReportCreatedEmail } from "@/email/travelReportCreatedEmail";
 
 const TRAVEL_KM_RATE =
   parseFloat(process.env.NEXT_PUBLIC_TRAVEL_KM_RATE) || 0.3;
@@ -50,6 +52,23 @@ export async function createTravelReport(data) {
         user: true,
       },
     });
+
+    // Send email notification
+    try {
+      const emailContent = travelReportCreatedEmail(travelReport);
+      await sendEmail({
+        to: process.env.KASSENWART_EMAIL,
+        cc: session.user?.email || undefined,
+        bcc: process.env.ADMIN_EMAIL,
+        subject: emailContent.subject,
+        html: emailContent.html,
+        text: emailContent.text,
+      });
+      console.log("Travel report creation email sent successfully");
+    } catch (emailError) {
+      console.error("Error sending travel report creation email:", emailError);
+      // Don't fail the entire operation if email fails
+    }
 
     return {
       success: true,
