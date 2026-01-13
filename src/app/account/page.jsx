@@ -25,6 +25,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { changePasswordAction } from "./actions/change-password";
 
 export default function AccountPage() {
@@ -32,6 +39,19 @@ export default function AccountPage() {
   const { data: session, isPending } = authClient.useSession();
   const [trainer, setTrainer] = useState(null);
   const [isLoadingTrainer, setIsLoadingTrainer] = useState(false);
+  const [isTrainerDialogOpen, setIsTrainerDialogOpen] = useState(false);
+  const [trainers, setTrainers] = useState([]);
+  const [isLoadingTrainers, setIsLoadingTrainers] = useState(false);
+  const [selectedTrainerId, setSelectedTrainerId] = useState("");
+  const [isUpdatingTrainer, setIsUpdatingTrainer] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const [isChangingPassword, startTransition] = useTransition();
 
   // Fetch trainer data when session is available
   useEffect(() => {
@@ -49,18 +69,58 @@ export default function AccountPage() {
     }
   }, [session?.user?.id]);
 
+  const openTrainerDialog = async () => {
+    setIsLoadingTrainers(true);
+    setSelectedTrainerId(trainer?.id?.toString() || "");
+    try {
+      const res = await fetch(`/api/account/trainers`);
+      const data = await res.json();
+      if (data.trainers) {
+        setTrainers(data.trainers);
+      }
+    } catch (err) {
+      console.error("Failed to fetch trainers:", err);
+    } finally {
+      setIsLoadingTrainers(false);
+      setIsTrainerDialogOpen(true);
+    }
+  };
+
+  const handleUpdateTrainer = async () => {
+    if (!selectedTrainerId) return;
+
+    setIsUpdatingTrainer(true);
+    try {
+      const res = await fetch(`/api/account/trainer`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          trainerId:
+            selectedTrainerId === "none" ? null : parseInt(selectedTrainerId),
+        }),
+      });
+      const data = await res.json();
+      if (data.trainer !== undefined) {
+        setTrainer(data.trainer);
+        setIsTrainerDialogOpen(false);
+        toast.success("Trainer erfolgreich aktualisiert");
+      } else {
+        toast.error(data.error || "Fehler beim Aktualisieren des Trainers");
+      }
+    } catch (err) {
+      console.error("Failed to update trainer:", err);
+      toast.error("Fehler beim Aktualisieren des Trainers");
+    } finally {
+      setIsUpdatingTrainer(false);
+    }
+  };
+
   if (!isPending && !session) {
     router.push("/signin");
     return null;
   }
-  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-  const [passwordError, setPasswordError] = useState("");
-  const [isChangingPassword, startTransition] = useTransition();
 
   const handleLogout = async () => {
     await authClient.signOut({
@@ -220,7 +280,14 @@ export default function AccountPage() {
             </div>
           ) : trainer ? (
             <div className="border-t pt-6">
-              <h4 className="text-sm font-medium mb-4">Verbundener Trainer</h4>
+              <div className="flex justify-between items-start mb-4">
+                <h4 className="text-sm font-medium">Verbundener Trainer</h4>
+                {session.user.role === "admin" && (
+                  <Button variant="outline" size="sm" onClick={openTrainerDialog}>
+                    Trainer ändern
+                  </Button>
+                )}
+              </div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Name:</span>
@@ -246,8 +313,13 @@ export default function AccountPage() {
             </div>
           ) : (
             <div className="border-t pt-6">
-              <h4 className="text-sm font-medium mb-4">Verbundener Trainer</h4>
-              <p className="text-sm text-muted-foreground">
+              <div className="flex justify-between items-center">
+                <h4 className="text-sm font-medium">Verbundener Trainer</h4>
+                <Button variant="outline" size="sm" onClick={openTrainerDialog}>
+                  Trainer mit Konto verknüpfen
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
                 Kein Trainerkonto verbunden.
               </p>
             </div>
@@ -263,6 +335,56 @@ export default function AccountPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={isTrainerDialogOpen} onOpenChange={setIsTrainerDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Trainer verknüpfen</DialogTitle>
+            <DialogDescription>
+              Wählen Sie einen Trainer aus, um ihn mit Ihrem Konto zu verknüpfen
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {isLoadingTrainers ? (
+              <Skeleton className="h-10 w-full" />
+            ) : (
+              <Select
+                value={selectedTrainerId}
+                onValueChange={setSelectedTrainerId}
+              >
+                <SelectTrigger className={"w-full"}>
+                  <SelectValue placeholder="Trainer auswählen" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Keine</SelectItem>
+                  {trainers.map((t) => (
+                    <SelectItem key={t.id} value={t.id.toString()}>
+                      {t.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsTrainerDialogOpen(false)}
+              disabled={isUpdatingTrainer}
+            >
+              Abbrechen
+            </Button>
+            <Button
+              type="submit"
+              onClick={handleUpdateTrainer}
+              disabled={isUpdatingTrainer || isLoadingTrainers}
+            >
+              {isUpdatingTrainer ? "Wird aktualisiert..." : "Speichern"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={isPasswordDialogOpen}
