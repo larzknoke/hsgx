@@ -2,7 +2,7 @@
 
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import {
@@ -30,6 +30,24 @@ import { changePasswordAction } from "./actions/change-password";
 export default function AccountPage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+  const [trainer, setTrainer] = useState(null);
+  const [isLoadingTrainer, setIsLoadingTrainer] = useState(false);
+
+  // Fetch trainer data when session is available
+  useEffect(() => {
+    if (session?.user?.id) {
+      setIsLoadingTrainer(true);
+      fetch(`/api/account/trainer`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.trainer) {
+            setTrainer(data.trainer);
+          }
+        })
+        .catch((err) => console.error("Failed to fetch trainer:", err))
+        .finally(() => setIsLoadingTrainer(false));
+    }
+  }, [session?.user?.id]);
 
   if (!isPending && !session) {
     router.push("/signin");
@@ -194,6 +212,46 @@ export default function AccountPage() {
               </div>
             </div>
           </div>
+
+          {isLoadingTrainer ? (
+            <div className="border-t pt-6">
+              <h4 className="text-sm font-medium mb-4">Verbundener Trainer</h4>
+              <Skeleton className="h-10 w-48" />
+            </div>
+          ) : trainer ? (
+            <div className="border-t pt-6">
+              <h4 className="text-sm font-medium mb-4">Verbundener Trainer</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Name:</span>
+                  <span className="font-medium">{trainer.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Trainer-ID:</span>
+                  <span className="font-mono">{trainer.id}</span>
+                </div>
+                {trainer.stammverein && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Stammverein:</span>
+                    <span>{trainer.stammverein}</span>
+                  </div>
+                )}
+                {trainer.licenseType && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Lizenzbez:</span>
+                    <span>{trainer.licenseType}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="border-t pt-6">
+              <h4 className="text-sm font-medium mb-4">Verbundener Trainer</h4>
+              <p className="text-sm text-muted-foreground">
+                Kein Trainerkonto verbunden.
+              </p>
+            </div>
+          )}
 
           <div className="border-t pt-6 flex justify-between">
             <Button variant="outline" onClick={handleChangePassword}>
