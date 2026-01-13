@@ -42,13 +42,11 @@ export function VehicleInput({ vehicles, onVehiclesChange }) {
 
   const calculateVehicleCost = (distance, noCharge) => {
     if (noCharge) return 0;
-    return (parseFloat(distance) || 0) * 2 * TRAVEL_KM_RATE;
+    return (parseFloat(distance) || 0) * TRAVEL_KM_RATE;
   };
 
   const calculateTotalDistance = () => {
-    return (
-      vehicles.reduce((sum, v) => sum + (parseFloat(v.distance) || 0), 0) * 2
-    );
+    return vehicles.reduce((sum, v) => sum + (parseFloat(v.distance) || 0), 0);
   };
 
   const calculateTotalCost = () => {
@@ -182,9 +180,12 @@ export function VehicleInput({ vehicles, onVehiclesChange }) {
               </div>
             </div>
           )} */}
-          <Alert variant="destructive" className={"bg-red-50 border-red-200"}>
+          <Alert>
             <AlertCircleIcon />
-            <AlertTitle>Distanz ist eine einfache Strecke.</AlertTitle>
+            <AlertTitle>
+              Bitte die Gesamtstrecke eingeben (Hin- und Rückweg bereits
+              zusammenrechnen).
+            </AlertTitle>
           </Alert>
         </CardContent>
       </Card>

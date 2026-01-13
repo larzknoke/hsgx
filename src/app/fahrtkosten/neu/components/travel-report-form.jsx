@@ -53,14 +53,12 @@ export default function TravelReportForm({ teams, currentUser }) {
   });
 
   const calculateTotalDistance = () => {
-    return (
-      vehicles.reduce((sum, v) => sum + (parseFloat(v.distance) || 0), 0) * 2
-    );
+    return vehicles.reduce((sum, v) => sum + (parseFloat(v.distance) || 0), 0);
   };
 
   const calculateTotalCost = () => {
     return vehicles.reduce((sum, v) => {
-      const distanceKm = (parseFloat(v.distance) || 0) * 2;
+      const distanceKm = parseFloat(v.distance) || 0;
       const noCharge = Boolean(v.noCharge);
       const cost = noCharge ? 0 : distanceKm * TRAVEL_KM_RATE;
       return sum + cost;
@@ -191,9 +189,7 @@ export default function TravelReportForm({ teams, currentUser }) {
                 />
 
                 <div className="space-y-2 bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm text-muted-foreground">
-                    Gesamtdistanz (Hin- & Rückfahrt)
-                  </p>
+                  <p className="text-sm text-muted-foreground">Gesamtdistanz</p>
                   <p className="text-2xl font-bold">
                     {calculateTotalDistance().toFixed(1)} km
                   </p>
