@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import { TRAINING_LOCATIONS, getLocationColor } from "@/lib/training-locations";
 import listPlugin from "@fullcalendar/list"; // Import the list plugin
 import deLocale from "@fullcalendar/core/locales/de"; // Import German locale
 import { Button } from "@/components/ui/button"; // Import shadcn Button
@@ -86,13 +87,6 @@ export default function BillCalendar({
     endTime: "",
   });
 
-  // Define colors for each location
-  const locationColors = {
-    bbs: "#ef4444",
-    liebig: "#facc15",
-    billerbeck: "#34d399",
-  };
-
   // Helper to add one day to the end date
   const addOneDay = (dateString) => {
     const date = new Date(dateString);
@@ -140,9 +134,8 @@ export default function BillCalendar({
         location: `${slot.location.toUpperCase()}`,
         start: `${date.toISOString().split("T")[0]}T${slot.start}`, // Combine date with start time
         end: `${date.toISOString().split("T")[0]}T${slot.end}`, // Combine date with end time
-        backgroundColor:
-          locationColors[slot.location.toLowerCase()] || "#888888", // Default color if location not found
-        borderColor: locationColors[slot.location.toLowerCase()] || "#888888", // Match border color
+        backgroundColor: getLocationColor(slot.location.toLowerCase()),
+        borderColor: getLocationColor(slot.location.toLowerCase()),
       }));
     });
     console.log("newEvents:", newEvents);
@@ -217,10 +210,8 @@ export default function BillCalendar({
       location: newEventData.location.toUpperCase(),
       start: `${selectedDate}T${newEventData.startTime}`,
       end: `${selectedDate}T${newEventData.endTime}`,
-      backgroundColor:
-        locationColors[newEventData.location.toLowerCase()] || "#888888",
-      borderColor:
-        locationColors[newEventData.location.toLowerCase()] || "#888888",
+      backgroundColor: getLocationColor(newEventData.location.toLowerCase()),
+      borderColor: getLocationColor(newEventData.location.toLowerCase()),
     };
 
     setEvents((prevEvents) => [...prevEvents, newEvent]);
@@ -331,9 +322,11 @@ export default function BillCalendar({
                   <SelectValue placeholder="Standort auswählen..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="bbs">BBS</SelectItem>
-                  <SelectItem value="liebig">Liebig</SelectItem>
-                  <SelectItem value="billerbeck">Billerbeck</SelectItem>
+                  {TRAINING_LOCATIONS.map((location) => (
+                    <SelectItem key={location.value} value={location.value}>
+                      {location.shortLabel}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

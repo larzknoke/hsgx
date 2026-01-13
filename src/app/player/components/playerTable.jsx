@@ -50,6 +50,34 @@ function PlayerTable({ players, teams }) {
     player.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Group players by team
+  const playersByTeam = filteredPlayers.reduce((acc, player) => {
+    // Handle players with no teams
+    if (!player.playerTeams || player.playerTeams.length === 0) {
+      if (!acc["Kein Team"]) acc["Kein Team"] = [];
+      acc["Kein Team"].push(player);
+    } else {
+      // Add player to each of their teams
+      player.playerTeams.forEach((pt) => {
+        const teamName = pt.team.name;
+        if (!acc[teamName]) acc[teamName] = [];
+        acc[teamName].push(player);
+      });
+    }
+    return acc;
+  }, {});
+
+  // Sort teams alphabetically and sort players within each team by year and name
+  const sortedTeams = Object.keys(playersByTeam).sort();
+  sortedTeams.forEach((teamName) => {
+    playersByTeam[teamName].sort((a, b) => {
+      const yearA = new Date(a.birthday).getFullYear();
+      const yearB = new Date(b.birthday).getFullYear();
+      if (yearA !== yearB) return yearA - yearB;
+      return a.name.localeCompare(b.name);
+    });
+  });
+
   return (
     <>
       <div className="w-full flex flex-row gap-6 justify-between">
@@ -72,38 +100,48 @@ function PlayerTable({ players, teams }) {
           <PlusIcon /> Neuer Spieler
         </Button>
       </div>
-      <Table>
-        <TableCaption>Alle Spieler</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Geburtstag</TableHead>
-            <TableHead>Geschlecht</TableHead>
-            <TableHead>Teams</TableHead>
-            <TableHead className="text-right"></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredPlayers.map((player) => (
-            <TableRow key={player.id}>
-              <TableCell className="font-medium">{player.id}</TableCell>
-              <TableCell className="font-medium">{player.name}</TableCell>
-              <TableCell>{formatDate(player.birthday)}</TableCell>
-              <TableCell>{player.gender || "-"}</TableCell>
-              <TableCell>
-                {player.playerTeams.map((pt) => pt.team.name).join(", ")}
-              </TableCell>
-              <TableCell className="text-right">
-                <PlayerListDropdown
-                  onDeleteClick={() => openDeleteDialog(player)}
-                  onEditClick={() => openEditDialog(player)}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <div className="space-y-8">
+        {sortedTeams.map((teamName) => (
+          <div key={teamName}>
+            <h3 className="text-lg font-semibold mb-2">{teamName}</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Jahrgang</TableHead>
+                  <TableHead>Geschlecht</TableHead>
+                  <TableHead>Stammverein</TableHead>
+                  <TableHead>Teams</TableHead>
+                  <TableHead className="text-right"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {playersByTeam[teamName].map((player) => (
+                  <TableRow key={`${teamName}-${player.id}`}>
+                    <TableCell className="font-medium">{player.id}</TableCell>
+                    <TableCell className="font-medium">{player.name}</TableCell>
+                    <TableCell>
+                      {new Date(player.birthday).getFullYear()}
+                    </TableCell>
+                    <TableCell>{player.gender || "-"}</TableCell>
+                    <TableCell>{player.stammverein || "-"}</TableCell>
+                    <TableCell>
+                      {player.playerTeams.map((pt) => pt.team.name).join(", ")}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <PlayerListDropdown
+                        onDeleteClick={() => openDeleteDialog(player)}
+                        onEditClick={() => openEditDialog(player)}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ))}
+      </div>
       <PlayerDeleteDialog
         open={deleteDialogState.open}
         player={deleteDialogState.player}

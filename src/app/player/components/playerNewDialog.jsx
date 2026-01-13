@@ -43,6 +43,7 @@ export default function PlayerNewDialog({ open, onClose, teams }) {
     name: z.string().min(1, { message: "Bitte einen Namen eingeben" }),
     birthday: z.string().optional(),
     gender: z.string().optional(),
+    stammverein: z.string().optional(),
   });
 
   const form = useForm({
@@ -51,6 +52,7 @@ export default function PlayerNewDialog({ open, onClose, teams }) {
       name: "",
       birthday: "",
       gender: "",
+      stammverein: "",
     },
   });
 
@@ -69,6 +71,7 @@ export default function PlayerNewDialog({ open, onClose, teams }) {
       formData.append("name", data.name);
       if (data.birthday) formData.append("birthday", data.birthday);
       if (data.gender) formData.append("gender", data.gender);
+      if (data.stammverein) formData.append("stammverein", data.stammverein);
       formData.append("teamIds", JSON.stringify(selectedTeams));
 
       try {
@@ -174,6 +177,42 @@ export default function PlayerNewDialog({ open, onClose, teams }) {
                             <SelectItem value="männlich">Männlich</SelectItem>
                             <SelectItem value="weiblich">Weiblich</SelectItem>
                             <SelectItem value="divers">Divers</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="stammverein"
+                render={({ field }) => (
+                  <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+                    <FormLabel className="flex shrink-0">Stammverein</FormLabel>
+
+                    <div className="w-full">
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Stammverein auswählen..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="MTV Holzminden">
+                              MTV Holzminden
+                            </SelectItem>
+                            <SelectItem value="TV Stadtoldendorf">
+                              TV Stadtoldendorf
+                            </SelectItem>
+                            <SelectItem value="MTV Bevern">
+                              MTV Bevern
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>

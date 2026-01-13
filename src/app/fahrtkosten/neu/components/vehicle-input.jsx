@@ -6,10 +6,16 @@ const TRAVEL_KM_RATE =
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2, PlusIcon } from "lucide-react";
+import { Trash2, PlusIcon, Info } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { AlertCircleIcon, CheckCircle2Icon, PopcornIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function VehicleInput({ vehicles, onVehiclesChange }) {
   const addVehicle = () => {
@@ -134,6 +140,16 @@ export function VehicleInput({ vehicles, onVehiclesChange }) {
                           >
                             ohne Berechnung
                           </label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-4 w-4 text-muted-foreground" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>z.B. TV-Bulli verwendet</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </div>
                       </div>
                       <div className="col-span-12 md:col-span-4 flex">

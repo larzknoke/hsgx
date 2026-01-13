@@ -15,6 +15,7 @@ import { getBillDetailsAction } from "../actions/get-bill-details";
 import { updateBillStatusAction } from "../actions/update-bill-status";
 import { generateBillPDFAction } from "../actions/generate-bill-pdf";
 import { getTrainerLicenseLabel } from "@/lib/trainerentgelte";
+import { getLocationLabel } from "@/lib/training-locations";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Download, Euro } from "lucide-react";
@@ -236,8 +237,8 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
                       bill.status === "paid"
                         ? "bg-green-100 text-green-800"
                         : bill.status === "submitted"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-800"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-gray-100 text-gray-800"
                     }`}
                   >
                     {getStatusLabel(bill.status)}
@@ -272,7 +273,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
                     ([location, group], index) => (
                       <tr key={index}>
                         <td className="border-b border-gray-300 px-4 py-2">
-                          {location}
+                          {getLocationLabel(location.toLowerCase())}
                         </td>
                         <td className="border-b border-gray-300 px-4 py-2">
                           {group.count}
@@ -338,7 +339,9 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
                             minute: "2-digit",
                           })}
                         </td>
-                        <td className="px-3 py-2 border-t">{event.location}</td>
+                        <td className="px-3 py-2 border-t">
+                          {getLocationLabel(event.location.toLowerCase())}
+                        </td>
                         <td className="px-3 py-2 border-t text-right">
                           {event.durationHours.toFixed(2)}
                         </td>
