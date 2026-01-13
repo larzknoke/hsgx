@@ -14,6 +14,13 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
@@ -36,6 +43,7 @@ function PlayerTable({ players, teams }) {
   });
   const [newDialogOpen, setNewDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [groupBy, setGroupBy] = useState("team");
 
   const openDeleteDialog = (player) =>
     setDeleteDialogState({ open: true, player });
@@ -50,27 +58,46 @@ function PlayerTable({ players, teams }) {
     player.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Group players by team
-  const playersByTeam = filteredPlayers.reduce((acc, player) => {
-    // Handle players with no teams
-    if (!player.playerTeams || player.playerTeams.length === 0) {
-      if (!acc["Kein Team"]) acc["Kein Team"] = [];
-      acc["Kein Team"].push(player);
-    } else {
-      // Add player to each of their teams
-      player.playerTeams.forEach((pt) => {
-        const teamName = pt.team.name;
-        if (!acc[teamName]) acc[teamName] = [];
-        acc[teamName].push(player);
-      });
+  // Group players based on selected grouping method
+  const groupedPlayers = filteredPlayers.reduce((acc, player) => {
+    let groupKeys = [];
+
+    if (groupBy === "team") {
+      // Handle players with no teams
+      if (!player.playerTeams || player.playerTeams.length === 0) {
+        groupKeys = ["Kein Team"];
+      } else {
+        // Add player to each of their teams
+        groupKeys = player.playerTeams.map((pt) => pt.team.name);
+      }
+    } else if (groupBy === "year") {
+      const year = new Date(player.birthday).getFullYear();
+      groupKeys = [year.toString()];
+    } else if (groupBy === "stammverein") {
+      const stammverein = player.stammverein || "Kein Stammverein";
+      groupKeys = [stammverein];
     }
+
+    groupKeys.forEach((key) => {
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(player);
+    });
+
     return acc;
   }, {});
 
-  // Sort teams alphabetically and sort players within each team by year and name
-  const sortedTeams = Object.keys(playersByTeam).sort();
-  sortedTeams.forEach((teamName) => {
-    playersByTeam[teamName].sort((a, b) => {
+  // Sort groups and sort players within each group
+  const sortedGroups = Object.keys(groupedPlayers).sort((a, b) => {
+    // For year grouping, sort numerically
+    if (groupBy === "year") {
+      return parseInt(a) - parseInt(b);
+    }
+    // For others, sort alphabetically
+    return a.localeCompare(b);
+  });
+
+  sortedGroups.forEach((groupName) => {
+    groupedPlayers[groupName].sort((a, b) => {
       const yearA = new Date(a.birthday).getFullYear();
       const yearB = new Date(b.birthday).getFullYear();
       if (yearA !== yearB) return yearA - yearB;
@@ -81,29 +108,43 @@ function PlayerTable({ players, teams }) {
   return (
     <>
       <div className="w-full flex flex-row gap-6 justify-between">
-        <InputGroup className="max-w-sm">
-          <InputGroupInput
-            placeholder="Suche..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <InputGroupAddon align="inline-end">
-            <InputGroupButton
-              variant="secondary"
-              onClick={() => setSearchTerm("")}
-            >
-              {searchTerm ? "Zurücksetzen" : "Suche"}
-            </InputGroupButton>
-          </InputGroupAddon>
-        </InputGroup>
+        <div className="flex flex-row gap-4 items-center">
+          <InputGroup className="max-w-sm md:w-80">
+            <InputGroupInput
+              placeholder="Suche..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton
+                variant="secondary"
+                onClick={() => setSearchTerm("")}
+              >
+                {searchTerm ? "Zurücksetzen" : "Suche"}
+              </InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
+          <Select value={groupBy} onValueChange={setGroupBy}>
+            <SelectTrigger className="w-[220px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="team">Gruppieren nach Team</SelectItem>
+              <SelectItem value="year">Gruppieren nach Jahrgang</SelectItem>
+              <SelectItem value="stammverein">
+                Gruppieren nach Stammverein
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <Button variant="success" onClick={() => setNewDialogOpen(true)}>
           <PlusIcon /> Neuer Spieler
         </Button>
       </div>
       <div className="space-y-8">
-        {sortedTeams.map((teamName) => (
-          <div key={teamName}>
-            <h3 className="text-lg font-semibold mb-2">{teamName}</h3>
+        {sortedGroups.map((groupName) => (
+          <div key={groupName}>
+            <h3 className="text-lg font-semibold mb-2">{groupName}</h3>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -117,8 +158,8 @@ function PlayerTable({ players, teams }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {playersByTeam[teamName].map((player) => (
-                  <TableRow key={`${teamName}-${player.id}`}>
+                {groupedPlayers[groupName].map((player) => (
+                  <TableRow key={`${groupName}-${player.id}`}>
                     <TableCell className="font-medium">{player.id}</TableCell>
                     <TableCell className="font-medium">{player.name}</TableCell>
                     <TableCell>
