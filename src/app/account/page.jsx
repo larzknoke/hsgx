@@ -283,7 +283,11 @@ export default function AccountPage() {
               <div className="flex justify-between items-start mb-4">
                 <h4 className="text-sm font-medium">Verbundener Trainer</h4>
                 {session.user.role === "admin" && (
-                  <Button variant="outline" size="sm" onClick={openTrainerDialog}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={openTrainerDialog}
+                  >
                     Trainer ändern
                   </Button>
                 )}
