@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { changePasswordAction } from "./actions/change-password";
+import { PageHeader } from "@/components/page-header";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -217,14 +218,15 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto">
+      <PageHeader title="Kontoeinstellungen" />
       <Card className="max-w-2xl mx-auto">
-        <CardHeader>
+        {/* <CardHeader>
           <CardTitle>Kontoeinstellungen</CardTitle>
           <CardDescription>
             Verwalten Sie Ihre Kontoinformationen und Einstellungen
           </CardDescription>
-        </CardHeader>
+        </CardHeader> */}
         <CardContent className="space-y-6">
           <div className="flex items-center space-x-4">
             <Avatar className="h-20 w-20">
@@ -252,11 +254,15 @@ export default function AccountPage() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Benutzer-ID:</span>
-                <span className="font-mono">...{session.user.id.slice(-10)}</span>
+                <span className="font-mono">
+                  ...{session.user.id.slice(-10)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Sitzungs-ID:</span>
-                <span className="font-mono ">...{session.session.id.slice(-10)}</span>
+                <span className="font-mono ">
+                  ...{session.session.id.slice(-10)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Rolle:</span>
