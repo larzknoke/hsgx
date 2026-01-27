@@ -167,7 +167,7 @@ export default function AccountPage() {
     startTransition(async () => {
       const result = await changePasswordAction(
         passwordForm.currentPassword,
-        passwordForm.newPassword
+        passwordForm.newPassword,
       );
 
       if (result.success) {
@@ -252,11 +252,11 @@ export default function AccountPage() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Benutzer-ID:</span>
-                <span className="font-mono">{session.user.id}</span>
+                <span className="font-mono">...{session.user.id.slice(-10)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Sitzungs-ID:</span>
-                <span className="font-mono ">{session.session.id}</span>
+                <span className="font-mono ">...{session.session.id.slice(-10)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Rolle:</span>
@@ -317,7 +317,7 @@ export default function AccountPage() {
             </div>
           ) : (
             <div className="border-t pt-6">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col justify-between md:flex-row md:items-center">
                 <h4 className="text-sm font-medium">Verbundener Trainer</h4>
                 <Button variant="outline" size="sm" onClick={openTrainerDialog}>
                   Konto mit Trainer verknüpfen
