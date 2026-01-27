@@ -49,12 +49,12 @@ function TrainingSlotFormComp({
               onSubmit={trainingSlotForm.handleSubmit(addTrainingSlot)}
               className="space-y-6"
             >
-              <div className="grid grid-cols-12 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={trainingSlotForm.control}
                   name="weekday"
                   render={({ field }) => (
-                    <FormItem className="col-span-6">
+                    <FormItem>
                       <FormLabel>Wochentag</FormLabel>
                       <FormControl>
                         <Select
@@ -83,7 +83,7 @@ function TrainingSlotFormComp({
                   control={trainingSlotForm.control}
                   name="location"
                   render={({ field }) => (
-                    <FormItem className="col-span-6">
+                    <FormItem>
                       <FormLabel>Ort</FormLabel>
                       <FormControl>
                         <Select
@@ -113,7 +113,7 @@ function TrainingSlotFormComp({
                   control={trainingSlotForm.control}
                   name="start"
                   render={({ field }) => (
-                    <FormItem className="col-span-6">
+                    <FormItem>
                       <FormLabel>Startzeit</FormLabel>
                       <FormControl>
                         <Input type="time" {...field} />
@@ -126,7 +126,7 @@ function TrainingSlotFormComp({
                   control={trainingSlotForm.control}
                   name="end"
                   render={({ field }) => (
-                    <FormItem className="col-span-6">
+                    <FormItem>
                       <FormLabel>Endzeit</FormLabel>
                       <FormControl>
                         <Input type="time" {...field} />

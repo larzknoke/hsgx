@@ -72,7 +72,7 @@ export default function BillCalendar({
 
   // Get the selected trainer's hourly rate
   const selectedTrainer = trainers?.find(
-    (t) => t.id.toString() === selectedTrainerId
+    (t) => t.id.toString() === selectedTrainerId,
   );
   const hourlyRate = selectedTrainer?.licenseType
     ? getTrainerHourlyRate(selectedTrainer.licenseType)
@@ -127,7 +127,7 @@ export default function BillCalendar({
       const dates = getDatesForWeekday(
         slot.weekday,
         selectedQuarter.start,
-        selectedQuarter.end
+        selectedQuarter.end,
       );
       return dates.map((date) => ({
         id: crypto.randomUUID(), // Unique ID for each event
@@ -162,7 +162,7 @@ export default function BillCalendar({
 
     const total = Object.values(grouped).reduce(
       (sum, group) => sum + group.totalCost,
-      0
+      0,
     );
 
     setGroupedEvents(grouped);
@@ -173,12 +173,12 @@ export default function BillCalendar({
   const handleEventClick = (clickInfo) => {
     if (
       confirm(
-        `Möchten Sie das Event "${clickInfo.event.title}" wirklich löschen?`
+        `Möchten Sie das Event "${clickInfo.event.title}" wirklich löschen?`,
       )
     ) {
       // Remove the event from the state
       setEvents((prevEvents) =>
-        prevEvents.filter((event) => event.id !== clickInfo.event.id)
+        prevEvents.filter((event) => event.id !== clickInfo.event.id),
       );
     }
   };
@@ -244,7 +244,7 @@ export default function BillCalendar({
                       : "outline"
                   }
                   onClick={() => setSelectedQuarter(quarter)}
-                  className="capitalize"
+                  className="capitalize w-1/5 md:w-auto px-4 md:px-3"
                 >
                   {quarter.label}
                 </Button>
