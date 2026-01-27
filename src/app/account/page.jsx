@@ -320,7 +320,7 @@ export default function AccountPage() {
               <div className="flex justify-between items-center">
                 <h4 className="text-sm font-medium">Verbundener Trainer</h4>
                 <Button variant="outline" size="sm" onClick={openTrainerDialog}>
-                  Trainer mit Konto verknüpfen
+                  Konto mit Trainer verknüpfen
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
