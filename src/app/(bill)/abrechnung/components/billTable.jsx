@@ -63,7 +63,7 @@ function BillTable({ bills, session }) {
   return (
     <>
       <div className="w-full flex flex-col md:flex-row gap-6 justify-between">
-        <InputGroup className="max-w-sm">
+        <InputGroup className="w-full md:max-w-sm">
           <InputGroupInput
             placeholder="Suche..."
             value={searchTerm}
@@ -84,7 +84,7 @@ function BillTable({ bills, session }) {
           </Link>
         </Button>
       </div>
-      <TooltipProvider>
+      <div className="w-full max-w-full overflow-hidden">
         <Table>
           <TableCaption>
             {isAdminOrKassenwart
@@ -168,7 +168,7 @@ function BillTable({ bills, session }) {
             )}
           </TableBody>
         </Table>
-      </TooltipProvider>
+      </div>
 
       {/* Bill Details Dialog */}
       <BillDetailsDialog
