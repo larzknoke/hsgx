@@ -144,3 +144,9 @@ h1 {
 .fc-event {
   @apply hover:cursor-pointer;
 }
+
+.fc .fc-toolbar {
+    flex-wrap: wrap;
+    gap: 0.5em;
+
+}
