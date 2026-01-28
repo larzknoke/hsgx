@@ -62,7 +62,7 @@ function BillTable({ bills, session }) {
 
   return (
     <>
-      <div className="w-full flex flex-row gap-6 justify-between">
+      <div className="w-full flex flex-col md:flex-row gap-6 justify-between">
         <InputGroup className="max-w-sm">
           <InputGroupInput
             placeholder="Suche..."
