@@ -84,91 +84,87 @@ function BillTable({ bills, session }) {
           </Link>
         </Button>
       </div>
-      <div className="w-full max-w-full overflow-hidden">
-        <Table>
-          <TableCaption>
-            {isAdminOrKassenwart
-              ? "Alle Abrechnungen"
-              : `Alle Abrechnungen von ${session?.user?.name || "dir"}`}{" "}
-            - {new Date().toLocaleDateString("de-DE")}
-          </TableCaption>
-          <TableHeader>
+      <Table>
+        <TableCaption>
+          {isAdminOrKassenwart
+            ? "Alle Abrechnungen"
+            : `Alle Abrechnungen von ${session?.user?.name || "dir"}`}{" "}
+          - {new Date().toLocaleDateString("de-DE")}
+        </TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID</TableHead>
+            <TableHead>Übungsleiter</TableHead>
+            <TableHead>Mannschaft</TableHead>
+            <TableHead>Quartal</TableHead>
+            <TableHead>Erstellt am</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Betrag</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredBills.length === 0 ? (
             <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Übungsleiter</TableHead>
-              <TableHead>Mannschaft</TableHead>
-              <TableHead>Quartal</TableHead>
-              <TableHead>Erstellt am</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Betrag</TableHead>
+              <TableCell
+                colSpan={7}
+                className="text-center text-muted-foreground"
+              >
+                {searchTerm
+                  ? "Keine Ergebnisse gefunden"
+                  : "Keine Abrechnungen vorhanden"}
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredBills.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={7}
-                  className="text-center text-muted-foreground"
-                >
-                  {searchTerm
-                    ? "Keine Ergebnisse gefunden"
-                    : "Keine Abrechnungen vorhanden"}
+          ) : (
+            filteredBills.map((bill) => (
+              <TableRow
+                key={bill.id}
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => handleRowClick(bill.id)}
+              >
+                <TableCell className="font-medium">{bill.id}</TableCell>
+                <TableCell className="font-medium">
+                  {bill.trainer.name}
+                </TableCell>
+                <TableCell>{bill.team.name}</TableCell>
+                <TableCell>{formatQuarter(bill.quarter, bill.year)}</TableCell>
+                <TableCell>
+                  {new Date(bill.createdAt).toLocaleDateString("de-DE")}
+                </TableCell>
+                <TableCell>
+                  {bill.status === "paid" ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CheckCircle2
+                          className="text-green-700"
+                          size={"22px"}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Bezahlt</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CircleAlert
+                          className="text-yellow-600"
+                          size={"22px"}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Ausstehend</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  {formatCurrency(bill.totalCost)}
                 </TableCell>
               </TableRow>
-            ) : (
-              filteredBills.map((bill) => (
-                <TableRow
-                  key={bill.id}
-                  className="cursor-pointer hover:bg-gray-50"
-                  onClick={() => handleRowClick(bill.id)}
-                >
-                  <TableCell className="font-medium">{bill.id}</TableCell>
-                  <TableCell className="font-medium">
-                    {bill.trainer.name}
-                  </TableCell>
-                  <TableCell>{bill.team.name}</TableCell>
-                  <TableCell>
-                    {formatQuarter(bill.quarter, bill.year)}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(bill.createdAt).toLocaleDateString("de-DE")}
-                  </TableCell>
-                  <TableCell>
-                    {bill.status === "paid" ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <CheckCircle2
-                            className="text-green-700"
-                            size={"22px"}
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Bezahlt</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <CircleAlert
-                            className="text-yellow-600"
-                            size={"22px"}
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Ausstehend</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatCurrency(bill.totalCost)}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            ))
+          )}
+        </TableBody>
+      </Table>
 
       {/* Bill Details Dialog */}
       <BillDetailsDialog

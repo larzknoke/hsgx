@@ -20,7 +20,9 @@ export function LayoutWrapper({ children }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="flex flex-1 flex-col p-6 bg-gray-50/20">{children}</main>
+      <main className="flex flex-1 flex-col p-6 overflow-x-hidden bg-gray-50/20">
+        {children}
+      </main>
     </SidebarProvider>
   );
 }
