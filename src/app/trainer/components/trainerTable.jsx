@@ -65,7 +65,7 @@ function TrainerTable({ trainers, session }) {
   const sortedStammvereine = Object.keys(trainersByStammverein).sort();
   sortedStammvereine.forEach((stammverein) => {
     trainersByStammverein[stammverein].sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
   });
 
@@ -122,7 +122,7 @@ function TrainerTable({ trainers, session }) {
                       <TableCell>
                         {trainer.licenseType
                           ? `${getTrainerHourlyRate(
-                              trainer.licenseType
+                              trainer.licenseType,
                             ).toFixed(2)} €`
                           : "-"}
                       </TableCell>

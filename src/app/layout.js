@@ -26,6 +26,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "HSGX | HSG-Solling-Handball",
   description: "Handball im Solling",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default async function RootLayout({ children }) {
