@@ -93,7 +93,6 @@ function TrainerTable({ trainers, session }) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
                   <TableHead>Trainer</TableHead>
                   <TableHead>Teams</TableHead>
                   <TableHead>Stammverein</TableHead>
@@ -105,7 +104,6 @@ function TrainerTable({ trainers, session }) {
               <TableBody>
                 {trainersByStammverein[stammverein].map((trainer) => (
                   <TableRow key={`${stammverein}-${trainer.id}`}>
-                    <TableCell className="font-medium">{trainer.id}</TableCell>
                     <TableCell className="font-medium">
                       {trainer.name}
                     </TableCell>

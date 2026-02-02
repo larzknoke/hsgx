@@ -153,9 +153,6 @@ function PlayerTable({ players, teams }) {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="hidden sm:table-cell w-16">
-                      ID
-                    </TableHead>
                     <TableHead className="w-32 sm:w-48">Name</TableHead>
                     <TableHead className="w-20 sm:w-28">Jahrgang</TableHead>
                     <TableHead className="hidden lg:table-cell w-32">
@@ -171,9 +168,6 @@ function PlayerTable({ players, teams }) {
                 <TableBody>
                   {groupedPlayers[groupName].map((player) => (
                     <TableRow key={`${groupName}-${player.id}`}>
-                      <TableCell className="hidden sm:table-cell w-16 font-medium">
-                        {player.id}
-                      </TableCell>
                       <TableCell className="w-32 sm:w-48 font-medium">
                         {player.name}
                       </TableCell>
