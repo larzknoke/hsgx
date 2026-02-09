@@ -55,7 +55,7 @@ function PlayerTable({ players, teams }) {
     setEditDialogState({ open: false, player: null });
 
   const filteredPlayers = players.filter((player) =>
-    player.name.toLowerCase().includes(searchTerm.toLowerCase())
+    player.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Group players based on selected grouping method
@@ -72,7 +72,8 @@ function PlayerTable({ players, teams }) {
       }
     } else if (groupBy === "year") {
       const year = new Date(player.birthday).getFullYear();
-      groupKeys = [year.toString()];
+      const gender = player.gender || "Unbekannt";
+      groupKeys = [`${year} - ${gender}`];
     } else if (groupBy === "stammverein") {
       const stammverein = player.stammverein || "Kein Stammverein";
       groupKeys = [stammverein];
@@ -88,9 +89,13 @@ function PlayerTable({ players, teams }) {
 
   // Sort groups and sort players within each group
   const sortedGroups = Object.keys(groupedPlayers).sort((a, b) => {
-    // For year grouping, sort numerically
+    // For year grouping, sort numerically by year, then by gender
     if (groupBy === "year") {
-      return parseInt(a) - parseInt(b);
+      const [yearA, genderA] = a.split(" - ");
+      const [yearB, genderB] = b.split(" - ");
+      const yearDiff = parseInt(yearA) - parseInt(yearB);
+      if (yearDiff !== 0) return yearDiff;
+      return (genderA || "").localeCompare(genderB || "");
     }
     // For others, sort alphabetically
     return a.localeCompare(b);
