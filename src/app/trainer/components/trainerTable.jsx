@@ -65,7 +65,7 @@ function TrainerTable({ trainers, session }) {
   const sortedStammvereine = Object.keys(trainersByStammverein).sort();
   sortedStammvereine.forEach((stammverein) => {
     trainersByStammverein[stammverein].sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
   });
 
@@ -93,7 +93,6 @@ function TrainerTable({ trainers, session }) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
                   <TableHead>Trainer</TableHead>
                   <TableHead>Teams</TableHead>
                   <TableHead>Stammverein</TableHead>
@@ -105,7 +104,6 @@ function TrainerTable({ trainers, session }) {
               <TableBody>
                 {trainersByStammverein[stammverein].map((trainer) => (
                   <TableRow key={`${stammverein}-${trainer.id}`}>
-                    <TableCell className="font-medium">{trainer.id}</TableCell>
                     <TableCell className="font-medium">
                       {trainer.name}
                     </TableCell>
@@ -124,7 +122,7 @@ function TrainerTable({ trainers, session }) {
                       <TableCell>
                         {trainer.licenseType
                           ? `${getTrainerHourlyRate(
-                              trainer.licenseType
+                              trainer.licenseType,
                             ).toFixed(2)} €`
                           : "-"}
                       </TableCell>

@@ -84,7 +84,6 @@ function TeamTable({ teams, trainers, session }) {
         <TableCaption>Alle Teams</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
             <TableHead>Team</TableHead>
             <TableHead>Trainer</TableHead>
             <TableHead>Spieler</TableHead>
@@ -98,7 +97,6 @@ function TeamTable({ teams, trainers, session }) {
               className="cursor-pointer hover:bg-gray-50"
               onClick={(e) => handleRowClick(team.id, e)}
             >
-              <TableCell className="font-medium">{team.id}</TableCell>
               <TableCell className="font-medium">{team.name}</TableCell>
               <TableCell>
                 {team.trainerTeams.map((tt) => tt.trainer.name).join(", ")}

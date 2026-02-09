@@ -112,9 +112,9 @@ function PlayerTable({ players, teams }) {
 
   return (
     <>
-      <div className="w-full flex flex-row gap-6 justify-between">
-        <div className="flex flex-row gap-4 items-center">
-          <InputGroup className="max-w-sm md:w-80">
+      <div className="w-full flex flex-col md:flex-row gap-4 md:gap-6 justify-between">
+        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+          <InputGroup className="w-full sm:max-w-sm md:w-80">
             <InputGroupInput
               placeholder="Suche..."
               value={searchTerm}
@@ -130,7 +130,7 @@ function PlayerTable({ players, teams }) {
             </InputGroupAddon>
           </InputGroup>
           <Select value={groupBy} onValueChange={setGroupBy}>
-            <SelectTrigger className="w-[220px]">
+            <SelectTrigger className="w-full sm:w-55">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -142,7 +142,11 @@ function PlayerTable({ players, teams }) {
             </SelectContent>
           </Select>
         </div>
-        <Button variant="success" onClick={() => setNewDialogOpen(true)}>
+        <Button
+          variant="success"
+          onClick={() => setNewDialogOpen(true)}
+          className="w-full md:w-auto"
+        >
           <PlusIcon /> Neuer Spieler
         </Button>
       </div>
@@ -150,41 +154,53 @@ function PlayerTable({ players, teams }) {
         {sortedGroups.map((groupName) => (
           <div key={groupName}>
             <h3 className="text-lg font-semibold mb-2">{groupName}</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Jahrgang</TableHead>
-                  <TableHead>Geschlecht</TableHead>
-                  <TableHead>Stammverein</TableHead>
-                  <TableHead>Teams</TableHead>
-                  <TableHead className="text-right"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {groupedPlayers[groupName].map((player) => (
-                  <TableRow key={`${groupName}-${player.id}`}>
-                    <TableCell className="font-medium">{player.id}</TableCell>
-                    <TableCell className="font-medium">{player.name}</TableCell>
-                    <TableCell>
-                      {new Date(player.birthday).getFullYear()}
-                    </TableCell>
-                    <TableCell>{player.gender || "-"}</TableCell>
-                    <TableCell>{player.stammverein || "-"}</TableCell>
-                    <TableCell>
-                      {player.playerTeams.map((pt) => pt.team.name).join(", ")}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <PlayerListDropdown
-                        onDeleteClick={() => openDeleteDialog(player)}
-                        onEditClick={() => openEditDialog(player)}
-                      />
-                    </TableCell>
+            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-32 sm:w-48">Name</TableHead>
+                    <TableHead className="w-20 sm:w-28">Jahrgang</TableHead>
+                    <TableHead className="hidden lg:table-cell w-32">
+                      Geschlecht
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell w-40 sm:w-48">
+                      Stammverein
+                    </TableHead>
+                    <TableHead className="w-40 sm:w-64">Teams</TableHead>
+                    <TableHead className="w-12 sm:w-16 text-right"></TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {groupedPlayers[groupName].map((player) => (
+                    <TableRow key={`${groupName}-${player.id}`}>
+                      <TableCell className="w-32 sm:w-48 font-medium">
+                        {player.name}
+                      </TableCell>
+                      <TableCell className="w-20 sm:w-28">
+                        {new Date(player.birthday).getFullYear()}
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell w-32">
+                        {player.gender || "-"}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell w-40 sm:w-48">
+                        {player.stammverein || "-"}
+                      </TableCell>
+                      <TableCell className="w-40 sm:w-64">
+                        {player.playerTeams
+                          .map((pt) => pt.team.name)
+                          .join(", ")}
+                      </TableCell>
+                      <TableCell className="w-12 sm:w-16 text-right">
+                        <PlayerListDropdown
+                          onDeleteClick={() => openDeleteDialog(player)}
+                          onEditClick={() => openEditDialog(player)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         ))}
       </div>
