@@ -153,7 +153,12 @@ function PlayerTable({ players, teams }) {
       <div className="space-y-8">
         {sortedGroups.map((groupName) => (
           <div key={groupName}>
-            <h3 className="text-lg font-semibold mb-2">{groupName}</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {groupName}
+              <span className="text-gray-400 text-sm ml-2">
+                ({groupedPlayers[groupName].length} Spieler)
+              </span>
+            </h3>
             <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
               <Table>
                 <TableHeader>
