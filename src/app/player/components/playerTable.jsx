@@ -44,6 +44,7 @@ function PlayerTable({ players, teams }) {
   const [newDialogOpen, setNewDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [groupBy, setGroupBy] = useState("team");
+  const [teamFilter, setTeamFilter] = useState("all");
 
   const openDeleteDialog = (player) =>
     setDeleteDialogState({ open: true, player });
@@ -54,9 +55,17 @@ function PlayerTable({ players, teams }) {
   const closeEditDialog = () =>
     setEditDialogState({ open: false, player: null });
 
-  const filteredPlayers = players.filter((player) =>
-    player.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const filteredPlayers = players
+    .filter((player) =>
+      player.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    )
+    .filter((player) => {
+      if (teamFilter === "all") return true;
+      if (!player.playerTeams || player.playerTeams.length === 0) return false;
+      return player.playerTeams.some(
+        (pt) => String(pt.teamId) === String(teamFilter),
+      );
+    });
 
   // Group players based on selected grouping method
   const groupedPlayers = filteredPlayers.reduce((acc, player) => {
@@ -134,6 +143,21 @@ function PlayerTable({ players, teams }) {
               <SelectItem value="stammverein">
                 Gruppieren nach Stammverein
               </SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={teamFilter} onValueChange={setTeamFilter}>
+            <SelectTrigger className="w-full sm:w-55">
+              <SelectValue placeholder="Alle Teams" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Alle Teams</SelectItem>
+              {[...teams]
+                .sort((a, b) => a.name.localeCompare(b.name, "de"))
+                .map((team) => (
+                  <SelectItem key={team.id} value={String(team.id)}>
+                    {team.name}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </div>
