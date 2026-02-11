@@ -19,12 +19,21 @@ import { getLocationLabel } from "@/lib/training-locations";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Download, Euro } from "lucide-react";
+import { hasRole } from "@/lib/roles";
 
-export default function BillDetailsDialog({ isOpen, onClose, billId }) {
+export default function BillDetailsDialog({
+  isOpen,
+  onClose,
+  billId,
+  session,
+}) {
   const [bill, setBill] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  const isAdminOrKassenwart =
+    hasRole(session, "admin") || hasRole(session, "kassenwart");
 
   useEffect(() => {
     if (isOpen && billId) {
@@ -56,7 +65,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
     if (!bill) return;
 
     const confirmed = confirm(
-      "Möchten Sie diese Abrechnung als bezahlt markieren?"
+      "Möchten Sie diese Abrechnung als bezahlt markieren?",
     );
     if (!confirmed) return;
 
@@ -81,7 +90,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
     if (!bill) return;
 
     const confirmed = confirm(
-      "Möchten Sie diese Abrechnung als unbezahlt markieren?"
+      "Möchten Sie diese Abrechnung als unbezahlt markieren?",
     );
     if (!confirmed) return;
 
@@ -285,7 +294,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
                           {formatCurrency(group.totalCost)}
                         </td>
                       </tr>
-                    )
+                    ),
                   )}
                 </tbody>
               </table>
@@ -322,7 +331,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
                       >
                         <td className="px-3 py-2 border-t">
                           {new Date(event.startDate).toLocaleDateString(
-                            "de-DE"
+                            "de-DE",
                           )}
                         </td>
                         <td className="px-3 py-2 border-t">
@@ -331,7 +340,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
                             {
                               hour: "2-digit",
                               minute: "2-digit",
-                            }
+                            },
                           )}{" "}
                           -{" "}
                           {new Date(event.endDate).toLocaleTimeString("de-DE", {
@@ -377,7 +386,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
               {isGeneratingPDF ? "Erstelle PDF..." : "Abrechnung PDF"}
             </Button>
           )}
-          {bill && bill.status !== "paid" && (
+          {bill && isAdminOrKassenwart && bill.status !== "paid" && (
             <Button
               onClick={handleMarkAsPaid}
               variant="success"
@@ -388,7 +397,7 @@ export default function BillDetailsDialog({ isOpen, onClose, billId }) {
               {isUpdating ? "Aktualisieren..." : "Als bezahlt markieren"}
             </Button>
           )}
-          {bill && bill.status === "paid" && (
+          {bill && isAdminOrKassenwart && bill.status === "paid" && (
             <Button
               onClick={handleMarkAsUnpaid}
               variant="warning"
