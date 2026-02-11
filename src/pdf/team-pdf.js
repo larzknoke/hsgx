@@ -69,10 +69,27 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#666",
   },
+  groupTitle: {
+    marginTop: 6,
+    marginBottom: 4,
+    fontWeight: "bold",
+  },
 });
 
 // Create Document Component
 const TeamPDF = ({ team, showLicense = false }) => {
+  const groupedPlayers = team.playerTeams.reduce((acc, playerTeam) => {
+    const year = new Date(playerTeam.player.birthday).getFullYear();
+    const key = year.toString();
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(playerTeam);
+    return acc;
+  }, {});
+
+  const sortedPlayerYears = Object.keys(groupedPlayers).sort(
+    (a, b) => parseInt(a) - parseInt(b),
+  );
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -146,23 +163,32 @@ const TeamPDF = ({ team, showLicense = false }) => {
             Spieler ({team.playerTeams.length})
           </Text>
           {team.playerTeams.length > 0 ? (
-            <View style={styles.table}>
-              <View style={styles.tableHeader}>
-                <Text style={styles.tableCellWide}>Name</Text>
-                <Text style={styles.tableCell}>Geburtsdatum</Text>
-                <Text style={styles.tableCell}>Geschlecht</Text>
-              </View>
-              {team.playerTeams.map((playerTeam) => (
-                <View key={playerTeam.id} style={styles.tableRow}>
-                  <Text style={styles.tableCellWide}>
-                    {playerTeam.player.name}
-                  </Text>
-                  <Text style={styles.tableCell}>
-                    {formatDate(playerTeam.player.birthday)}
-                  </Text>
-                  <Text style={styles.tableCell}>
-                    {getGenderLabel(playerTeam.player.gender)}
-                  </Text>
+            <View>
+              {sortedPlayerYears.map((year) => (
+                <View key={year} style={styles.table}>
+                  <Text style={styles.groupTitle}>Jahrgang {year}</Text>
+                  <View style={styles.tableHeader}>
+                    <Text style={styles.tableCellWide}>Name</Text>
+                    <Text style={styles.tableCell}>Geburtsdatum</Text>
+                    <Text style={styles.tableCell}>Geschlecht</Text>
+                  </View>
+                  {[...groupedPlayers[year]]
+                    .sort((a, b) =>
+                      a.player.name.localeCompare(b.player.name, "de"),
+                    )
+                    .map((playerTeam) => (
+                      <View key={playerTeam.id} style={styles.tableRow}>
+                        <Text style={styles.tableCellWide}>
+                          {playerTeam.player.name}
+                        </Text>
+                        <Text style={styles.tableCell}>
+                          {formatDate(playerTeam.player.birthday)}
+                        </Text>
+                        <Text style={styles.tableCell}>
+                          {getGenderLabel(playerTeam.player.gender)}
+                        </Text>
+                      </View>
+                    ))}
                 </View>
               ))}
             </View>
