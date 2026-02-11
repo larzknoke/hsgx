@@ -81,7 +81,8 @@ function PlayerTable({ players, teams }) {
       }
     } else if (groupBy === "year") {
       const year = new Date(player.birthday).getFullYear();
-      groupKeys = [year.toString()];
+      const gender = player.gender || "Unbekannt";
+      groupKeys = [`${year} - ${gender}`];
     } else if (groupBy === "stammverein") {
       const stammverein = player.stammverein || "Kein Stammverein";
       groupKeys = [stammverein];
@@ -97,9 +98,13 @@ function PlayerTable({ players, teams }) {
 
   // Sort groups and sort players within each group
   const sortedGroups = Object.keys(groupedPlayers).sort((a, b) => {
-    // For year grouping, sort numerically
+    // For year grouping, sort numerically by year, then by gender
     if (groupBy === "year") {
-      return parseInt(a) - parseInt(b);
+      const [yearA, genderA] = a.split(" - ");
+      const [yearB, genderB] = b.split(" - ");
+      const yearDiff = parseInt(yearA) - parseInt(yearB);
+      if (yearDiff !== 0) return yearDiff;
+      return (genderA || "").localeCompare(genderB || "");
     }
     // For others, sort alphabetically
     return a.localeCompare(b);
@@ -172,7 +177,12 @@ function PlayerTable({ players, teams }) {
       <div className="space-y-8">
         {sortedGroups.map((groupName) => (
           <div key={groupName}>
-            <h3 className="text-lg font-semibold mb-2">{groupName}</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {groupName}
+              <span className="text-gray-400 text-sm ml-2">
+                ({groupedPlayers[groupName].length} Spieler)
+              </span>
+            </h3>
             <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
               <Table>
                 <TableHeader>
