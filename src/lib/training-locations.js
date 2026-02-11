@@ -29,12 +29,18 @@ export const TRAINING_LOCATIONS = [
     shortLabel: "OS",
     color: "#a855f7",
   },
+  {
+    value: "realschulhalle",
+    label: "Realschulhalle",
+    shortLabel: "Realschule",
+    color: "#10b981",
+  },
 ];
 
 // Helper to get color by location value
 export const getLocationColor = (locationValue) => {
   const location = TRAINING_LOCATIONS.find(
-    (loc) => loc.value === locationValue
+    (loc) => loc.value === locationValue,
   );
   return location?.color || "#888888";
 };
@@ -42,7 +48,7 @@ export const getLocationColor = (locationValue) => {
 // Helper to get label by location value
 export const getLocationLabel = (locationValue) => {
   const location = TRAINING_LOCATIONS.find(
-    (loc) => loc.value === locationValue
+    (loc) => loc.value === locationValue,
   );
   return location?.label || locationValue;
 };
@@ -50,7 +56,7 @@ export const getLocationLabel = (locationValue) => {
 // Helper to get short label by location value
 export const getLocationShortLabel = (locationValue) => {
   const location = TRAINING_LOCATIONS.find(
-    (loc) => loc.value === locationValue
+    (loc) => loc.value === locationValue,
   );
   return location?.shortLabel || locationValue;
 };
