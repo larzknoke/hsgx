@@ -126,7 +126,7 @@ function PlayerTable({ players, teams }) {
     if (sortedGroups.length > 0) {
       setActiveTab(sortedGroups[0]);
     }
-  }, [sortedGroups]);
+  }, [groupBy, teamFilter, searchTerm]);
 
   return (
     <>
@@ -197,7 +197,7 @@ function PlayerTable({ players, teams }) {
           {sortedGroups.map((groupName) => (
             <TabsTrigger key={groupName} value={groupName} className="text-sm">
               {groupName}
-              <span className="text-gray-400 ml-1">
+              <span className="text-gray-400 ml-auto">
                 ({groupedPlayers[groupName].length})
               </span>
             </TabsTrigger>
