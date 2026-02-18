@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { PlusIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatDate } from "@/lib/utils";
 import {
   Table,
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   InputGroup,
   InputGroupAddon,
@@ -45,6 +46,7 @@ function PlayerTable({ players, teams }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [groupBy, setGroupBy] = useState("team");
   const [teamFilter, setTeamFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("");
 
   const openDeleteDialog = (player) =>
     setDeleteDialogState({ open: true, player });
@@ -119,6 +121,13 @@ function PlayerTable({ players, teams }) {
     });
   });
 
+  // Reset to first tab when filters change
+  useEffect(() => {
+    if (sortedGroups.length > 0) {
+      setActiveTab(sortedGroups[0]);
+    }
+  }, [sortedGroups]);
+
   return (
     <>
       <div className="w-full flex flex-col md:flex-row gap-4 md:gap-6 justify-between">
@@ -174,15 +183,28 @@ function PlayerTable({ players, teams }) {
           <PlusIcon /> Neuer Spieler
         </Button>
       </div>
-      <div className="space-y-8">
-        {sortedGroups.map((groupName) => (
-          <div key={groupName}>
-            <h3 className="text-lg font-semibold mb-2">
+      <Tabs
+        orientation="vertical"
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="py-10 gap-10"
+        // className="w-full"
+      >
+        <TabsList
+        // variant="line"
+        // className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-auto overflow-x-auto"
+        >
+          {sortedGroups.map((groupName) => (
+            <TabsTrigger key={groupName} value={groupName} className="text-sm">
               {groupName}
-              <span className="text-gray-400 text-sm ml-2">
-                ({groupedPlayers[groupName].length} Spieler)
+              <span className="text-gray-400 ml-1">
+                ({groupedPlayers[groupName].length})
               </span>
-            </h3>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {sortedGroups.map((groupName) => (
+          <TabsContent key={groupName} value={groupName}>
             <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
               <Table>
                 <TableHeader>
@@ -230,9 +252,9 @@ function PlayerTable({ players, teams }) {
                 </TableBody>
               </Table>
             </div>
-          </div>
+          </TabsContent>
         ))}
-      </div>
+      </Tabs>
       <PlayerDeleteDialog
         open={deleteDialogState.open}
         player={deleteDialogState.player}
