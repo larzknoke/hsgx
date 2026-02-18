@@ -195,7 +195,11 @@ function PlayerTable({ players, teams }) {
         // className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-auto overflow-x-auto"
         >
           {sortedGroups.map((groupName) => (
-            <TabsTrigger key={groupName} value={groupName} className="text-sm">
+            <TabsTrigger
+              key={groupName}
+              value={groupName}
+              className="text-sm gap-8 py-1.25 px-3 whitespace-nowrap"
+            >
               {groupName}
               <span className="text-gray-400 ml-auto">
                 ({groupedPlayers[groupName].length})
