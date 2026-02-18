@@ -35,6 +35,12 @@ export const TRAINING_LOCATIONS = [
     shortLabel: "Realschule",
     color: "#10b981",
   },
+  {
+    value: "asli",
+    label: "ASLI-Halle",
+    shortLabel: "ASLI",
+    color: "#f97316",
+  },
 ];
 
 // Helper to get color by location value
