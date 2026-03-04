@@ -22,15 +22,29 @@ async function getTrainers() {
   return trainers;
 }
 
+async function getCurrentUserTrainerId(userId) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { trainerId: true },
+  });
+
+  return user?.trainerId ?? null;
+}
+
 async function Trainer() {
   const session = await requireSession();
 
   const trainers = await getTrainers();
+  const currentUserTrainerId = await getCurrentUserTrainerId(session.user.id);
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title="Trainer" />
       <Suspense fallback={<Skeleton />}>
-        <TrainerTable trainers={trainers} session={session} />
+        <TrainerTable
+          trainers={trainers}
+          session={session}
+          currentUserTrainerId={currentUserTrainerId}
+        />
       </Suspense>
     </div>
   );

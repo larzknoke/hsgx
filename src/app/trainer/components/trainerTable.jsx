@@ -28,7 +28,7 @@ import {
 } from "@/lib/trainerentgelte";
 import { hasRole } from "@/lib/roles";
 
-function TrainerTable({ trainers, session }) {
+function TrainerTable({ trainers, session, currentUserTrainerId }) {
   const router = useRouter();
   const [deleteDialogState, setDeleteDialogState] = useState({
     open: false,
@@ -42,6 +42,10 @@ function TrainerTable({ trainers, session }) {
 
   const isAdminOrKassenwart =
     hasRole(session, "admin") || hasRole(session, "kassenwart");
+  const isAdmin = hasRole(session, "admin");
+  const canEditTrainer = (trainer) =>
+    isAdmin ||
+    (currentUserTrainerId !== null && currentUserTrainerId === trainer.id);
 
   const openDeleteDialog = (trainer) =>
     setDeleteDialogState({ open: true, trainer });
@@ -128,8 +132,10 @@ function TrainerTable({ trainers, session }) {
                       </TableCell>
                     )}
                     <TableCell className="text-right">
-                      {isAdminOrKassenwart && (
+                      {(canEditTrainer(trainer) || isAdminOrKassenwart) && (
                         <TrainerListDropdown
+                          canEdit={canEditTrainer(trainer)}
+                          canDelete={isAdminOrKassenwart}
                           onDeleteClick={() => openDeleteDialog(trainer)}
                           onEditClick={() => openEditDialog(trainer)}
                         />

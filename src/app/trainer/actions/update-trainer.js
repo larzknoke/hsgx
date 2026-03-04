@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import prisma from "@/lib/prisma";
+import { requireSession } from "@/lib/auth-helper";
+import { hasRole } from "@/lib/roles";
 
 const schema = z.object({
   id: z.number(),
@@ -13,6 +15,7 @@ const schema = z.object({
 
 export async function updateTrainerAction(formData) {
   console.log("updateTrainerAction called");
+  const session = await requireSession();
   const data = Object.fromEntries(formData);
 
   const parsed = schema.safeParse({
@@ -24,6 +27,19 @@ export async function updateTrainerAction(formData) {
 
   if (!parsed.success) {
     throw new Error(parsed.error.errors[0].message);
+  }
+
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { trainerId: true },
+  });
+
+  const isAdmin = hasRole(session, "admin");
+
+  if (!isAdmin && currentUser?.trainerId !== parsed.data.id) {
+    throw new Error(
+      "Keine Berechtigung: Sie können nur Ihren verknüpften Trainer bearbeiten.",
+    );
   }
 
   await prisma.trainer.update({
