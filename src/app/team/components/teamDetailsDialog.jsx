@@ -29,6 +29,20 @@ export default function TeamDetailsDialog({
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
+  const groupedPlayers = team
+    ? team.playerTeams.reduce((acc, playerTeam) => {
+        const year = new Date(playerTeam.player.birthday).getFullYear();
+        const key = year.toString();
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(playerTeam);
+        return acc;
+      }, {})
+    : {};
+
+  const sortedPlayerYears = Object.keys(groupedPlayers).sort(
+    (a, b) => parseInt(a) - parseInt(b),
+  );
+
   const isAdminOrKassenwart =
     hasRole(session, "admin") || hasRole(session, "kassenwart");
 
@@ -176,7 +190,7 @@ export default function TeamDetailsDialog({
                             <td className="px-4 py-3">
                               {trainerTeam.trainer.licenseType
                                 ? getTrainerLicenseLabel(
-                                    trainerTeam.trainer.licenseType
+                                    trainerTeam.trainer.licenseType,
                                   )
                                 : "-"}
                             </td>
@@ -201,40 +215,51 @@ export default function TeamDetailsDialog({
                   Keine Spieler zugeordnet
                 </p>
               ) : (
-                <div className="max-h-96 overflow-y-auto border rounded">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 sticky top-0">
-                      <tr>
-                        <th className="px-4 py-3 text-left font-medium">
-                          Name
-                        </th>
-                        <th className="px-4 py-3 text-left font-medium">
-                          Geburtstag
-                        </th>
-                        <th className="px-4 py-3 text-left font-medium">
-                          Geschlecht
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {team.playerTeams.map((playerTeam) => (
-                        <tr
-                          key={playerTeam.id}
-                          className="border-t hover:bg-gray-50"
-                        >
-                          <td className="px-4 py-3">
-                            {playerTeam.player.name}
-                          </td>
-                          <td className="px-4 py-3">
-                            {formatDate(playerTeam.player.birthday)}
-                          </td>
-                          <td className="px-4 py-3">
-                            {getGenderLabel(playerTeam.player.gender)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="max-h-96 overflow-y-auto space-y-4">
+                  {sortedPlayerYears.map((year) => (
+                    <div key={year} className="border rounded overflow-hidden">
+                      <div className="bg-gray-50 px-4 py-2 font-medium">
+                        Jahrgang {year}
+                      </div>
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-4 py-3 text-left font-medium">
+                              Name
+                            </th>
+                            <th className="px-4 py-3 text-left font-medium">
+                              Geburtstag
+                            </th>
+                            <th className="px-4 py-3 text-left font-medium">
+                              Geschlecht
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[...groupedPlayers[year]]
+                            .sort((a, b) =>
+                              a.player.name.localeCompare(b.player.name, "de"),
+                            )
+                            .map((playerTeam) => (
+                              <tr
+                                key={playerTeam.id}
+                                className="border-t hover:bg-gray-50"
+                              >
+                                <td className="px-4 py-3">
+                                  {playerTeam.player.name}
+                                </td>
+                                <td className="px-4 py-3">
+                                  {formatDate(playerTeam.player.birthday)}
+                                </td>
+                                <td className="px-4 py-3">
+                                  {getGenderLabel(playerTeam.player.gender)}
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

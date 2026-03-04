@@ -171,6 +171,7 @@ function BillTable({ bills, session }) {
         isOpen={dialogOpen}
         onClose={handleCloseDialog}
         billId={selectedBillId}
+        session={session}
       />
     </>
   );
