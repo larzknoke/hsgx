@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import {
   Table,
   TableBody,
@@ -16,27 +16,33 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import {
-  CheckCircle2,
-  OctagonAlertIcon,
-  PlusIcon,
-  CircleAlert,
-} from "lucide-react";
+import { CheckCircle2, PlusIcon, CircleAlert, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatQuarter } from "@/lib/utils";
 import { hasRole } from "@/lib/roles";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import BillDetailsDialog from "./billDetailsDialog";
+import { toast } from "sonner";
+import { deleteBillAction } from "../actions/delete-bill";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 function BillTable({ bills, session }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBillId, setSelectedBillId] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [billToDelete, setBillToDelete] = useState(null);
+  const [isDeleting, startDeleteTransition] = useTransition();
 
   const isAdminOrKassenwart =
     hasRole(session, "admin") || hasRole(session, "kassenwart");
@@ -49,6 +55,31 @@ function BillTable({ bills, session }) {
   const handleCloseDialog = () => {
     setDialogOpen(false);
     setSelectedBillId(null);
+  };
+
+  const handleDeleteClick = (event, bill) => {
+    event.stopPropagation();
+    setBillToDelete(bill);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setBillToDelete(null);
+  };
+
+  const handleDeleteBill = () => {
+    if (!billToDelete) return;
+
+    startDeleteTransition(async () => {
+      try {
+        await deleteBillAction(billToDelete.id);
+        toast.success(`Abrechnung ${billToDelete.id} gelöscht`);
+        handleCloseDeleteDialog();
+      } catch (error) {
+        toast.error(error.message || "Fehler beim Löschen der Abrechnung");
+      }
+    });
   };
 
   const filteredBills = bills.filter((bill) => {
@@ -100,13 +131,16 @@ function BillTable({ bills, session }) {
             <TableHead>Erstellt am</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Betrag</TableHead>
+            {isAdminOrKassenwart && (
+              <TableHead className="text-right"></TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
           {filteredBills.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={7}
+                colSpan={isAdminOrKassenwart ? 8 : 7}
                 className="text-center text-muted-foreground"
               >
                 {searchTerm
@@ -160,6 +194,26 @@ function BillTable({ bills, session }) {
                 <TableCell className="text-right">
                   {formatCurrency(bill.totalCost)}
                 </TableCell>
+                {isAdminOrKassenwart && (
+                  <TableCell className="text-right">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          size="icon-sm"
+                          variant="ghost"
+                          aria-label="Abrechnung löschen"
+                          onClick={(event) => handleDeleteClick(event, bill)}
+                        >
+                          <Trash2 className="text-destructive" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Löschen</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableCell>
+                )}
               </TableRow>
             ))
           )}
@@ -173,6 +227,34 @@ function BillTable({ bills, session }) {
         billId={selectedBillId}
         session={session}
       />
+
+      <Dialog open={deleteDialogOpen} onOpenChange={handleCloseDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Löschen bestätigen</DialogTitle>
+          </DialogHeader>
+          <p>
+            Möchtest du die Abrechnung <strong>{billToDelete?.id}</strong>{" "}
+            wirklich löschen?
+          </p>
+          <DialogFooter className="mt-4 flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={handleCloseDeleteDialog}
+              disabled={isDeleting}
+            >
+              Abbrechen
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteBill}
+              disabled={isDeleting || !billToDelete}
+            >
+              {isDeleting ? "Löschen..." : "Löschen"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
