@@ -30,6 +30,7 @@ import { hasRole } from "@/lib/roles";
 
 function TrainerTable({ trainers, session, currentUserTrainerId }) {
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
   const [deleteDialogState, setDeleteDialogState] = useState({
     open: false,
     trainer: null,
@@ -57,8 +58,26 @@ function TrainerTable({ trainers, session, currentUserTrainerId }) {
   const closeEditDialog = () =>
     setEditDialogState({ open: false, trainer: null });
 
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+  const filteredTrainers = normalizedSearchQuery
+    ? trainers.filter((trainer) => {
+        const teamNames = trainer.trainerTeams
+          ?.map((tt) => tt.team.name)
+          .join(" ")
+          .toLowerCase();
+
+        return (
+          trainer.name.toLowerCase().includes(normalizedSearchQuery) ||
+          (trainer.stammverein || "")
+            .toLowerCase()
+            .includes(normalizedSearchQuery) ||
+          teamNames?.includes(normalizedSearchQuery)
+        );
+      })
+    : trainers;
+
   // Group trainers by stammverein
-  const trainersByStammverein = trainers.reduce((acc, trainer) => {
+  const trainersByStammverein = filteredTrainers.reduce((acc, trainer) => {
     const stammverein = trainer.stammverein || "Kein Stammverein";
     if (!acc[stammverein]) acc[stammverein] = [];
     acc[stammverein].push(trainer);
@@ -77,7 +96,11 @@ function TrainerTable({ trainers, session, currentUserTrainerId }) {
     <>
       <div className="w-full flex flex-row gap-6 justify-between">
         <InputGroup className="max-w-sm">
-          <InputGroupInput placeholder="Suche..." />
+          <InputGroupInput
+            placeholder="Suche..."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
           <InputGroupAddon align="inline-end">
             <InputGroupButton variant="secondary">Suche</InputGroupButton>
           </InputGroupAddon>
@@ -91,6 +114,11 @@ function TrainerTable({ trainers, session, currentUserTrainerId }) {
         </Button>
       </div>
       <div className="space-y-8">
+        {sortedStammvereine.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            Keine Trainer gefunden.
+          </p>
+        )}
         {sortedStammvereine.map((stammverein) => (
           <div key={stammverein}>
             <h3 className="text-lg font-semibold mb-2">{stammverein}</h3>
