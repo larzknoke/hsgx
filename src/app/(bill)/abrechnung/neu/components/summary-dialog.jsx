@@ -12,7 +12,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import { createBillAction } from "../actions/create-bill";
-import { getTrainerHourlyRate } from "@/lib/trainerentgelte";
+import {
+  getTrainerHourlyRate,
+  getTrainerLicenseLabel,
+} from "@/lib/trainerentgelte";
 import { formatCurrency } from "@/lib/utils";
 import { getLocationLabel } from "@/lib/training-locations";
 
@@ -29,15 +32,17 @@ export default function SummaryDialog({
 
   // Find trainer and team by ID
   const selectedTrainer = trainers?.find(
-    (t) => t.id.toString() === formData.trainer
+    (t) => t.id.toString() === formData.trainer,
   );
   const selectedTeam = teams?.find(
-    (t) => t.id.toString() === formData.mannschaft
+    (t) => t.id.toString() === formData.mannschaft,
   );
 
   // Map formData to use label values
   const mappedFormData = {
-    trainer: selectedTrainer?.name || formData.trainer || "-",
+    trainer: selectedTrainer
+      ? `${selectedTrainer.name} (${getTrainerLicenseLabel(selectedTrainer.licenseType)} - ${formatCurrency(getTrainerHourlyRate(selectedTrainer.licenseType))})`
+      : formData.trainer || "-",
     stammverein: selectedTrainer?.stammverein || "-",
     mannschaft: selectedTeam?.name || formData.mannschaft || "-",
     iban: formData.iban || "-",
@@ -68,7 +73,7 @@ export default function SummaryDialog({
   // Calculate overall total cost
   const totalCost = Object.values(groupedEvents).reduce(
     (sum, group) => sum + group.totalCost,
-    0
+    0,
   );
 
   const handleSave = async () => {
@@ -192,7 +197,7 @@ export default function SummaryDialog({
                         {formatCurrency(group.totalCost)}
                       </td>
                     </tr>
-                  )
+                  ),
                 )}
               </tbody>
             </table>
