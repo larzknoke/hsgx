@@ -34,7 +34,10 @@ import {
 } from "@/components/ui/select";
 import { changePasswordAction } from "./actions/change-password";
 import { PageHeader } from "@/components/page-header";
-import { getTrainerHourlyRate, getTrainerLicenseLabel } from "@/lib/trainerentgelte";
+import {
+  getTrainerHourlyRate,
+  getTrainerLicenseLabel,
+} from "@/lib/trainerentgelte";
 import { formatCurrency } from "@/lib/utils";
 
 export default function AccountPage() {
@@ -318,7 +321,13 @@ export default function AccountPage() {
                 {trainer.licenseType && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Lizenzbez:</span>
-                    <span>{getTrainerLicenseLabel(trainer.licenseType)} ({formatCurrency(getTrainerHourlyRate(trainer.licenseType))})</span>
+                    <span>
+                      {getTrainerLicenseLabel(trainer.licenseType)} (
+                      {formatCurrency(
+                        getTrainerHourlyRate(trainer.licenseType),
+                      )}
+                      )
+                    </span>
                   </div>
                 )}
               </div>
