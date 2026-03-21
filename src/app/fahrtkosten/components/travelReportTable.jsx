@@ -28,10 +28,13 @@ import {
 } from "@/components/ui/tooltip";
 import { deleteTravelReport } from "../actions";
 import { toast } from "sonner";
+import TravelReportDetailsDialog from "./travelReportDetailsDialog";
 
 function TravelReportTable({ travelReports, session }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [reports, setReports] = useState(travelReports);
+  const [selectedReportId, setSelectedReportId] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const isAdminOrKassenwart =
     hasRole(session, "admin") || hasRole(session, "kassenwart");
@@ -51,6 +54,27 @@ function TravelReportTable({ travelReports, session }) {
       toast.error(result.message);
     }
   };
+
+  const handleRowClick = (reportId) => {
+    setSelectedReportId(reportId);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setSelectedReportId(null);
+  };
+
+  const handleStatusUpdated = (updatedReport) => {
+    setReports((prevReports) =>
+      prevReports.map((report) =>
+        report.id === updatedReport.id ? updatedReport : report,
+      ),
+    );
+  };
+
+  const selectedReport =
+    reports.find((report) => report.id === selectedReportId) || null;
 
   const filteredReports = reports.filter((report) => {
     const searchLower = searchTerm.toLowerCase();
@@ -121,7 +145,11 @@ function TravelReportTable({ travelReports, session }) {
               </TableRow>
             ) : (
               filteredReports.map((report) => (
-                <TableRow key={report.id} className="hover:bg-gray-50">
+                <TableRow
+                  key={report.id}
+                  className="cursor-pointer hover:bg-gray-50"
+                  onClick={() => handleRowClick(report.id)}
+                >
                   <TableCell className="font-medium">{report.id}</TableCell>
                   <TableCell>{report.destination}</TableCell>
                   <TableCell>{report.team.name}</TableCell>
@@ -171,7 +199,10 @@ function TravelReportTable({ travelReports, session }) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDelete(report.id)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleDelete(report.id);
+                          }}
                         >
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </Button>
@@ -187,6 +218,14 @@ function TravelReportTable({ travelReports, session }) {
           </TableBody>
         </Table>
       </TooltipProvider>
+
+      <TravelReportDetailsDialog
+        isOpen={dialogOpen}
+        onClose={handleCloseDialog}
+        travelReport={selectedReport}
+        session={session}
+        onStatusUpdated={handleStatusUpdated}
+      />
     </>
   );
 }
