@@ -16,6 +16,13 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CheckCircle2, PlusIcon, CircleAlert, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatQuarter } from "@/lib/utils";
@@ -38,6 +45,7 @@ import {
 
 function BillTable({ bills, session }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedQuarterKey, setSelectedQuarterKey] = useState("all");
   const [selectedBillId, setSelectedBillId] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -82,13 +90,39 @@ function BillTable({ bills, session }) {
     });
   };
 
+  const availableQuarters = Array.from(
+    bills
+      .reduce((quarters, bill) => {
+        const key = `${bill.year}-${bill.quarter}`;
+
+        if (!quarters.has(key)) {
+          quarters.set(key, {
+            key,
+            label: formatQuarter(bill.quarter, bill.year),
+            year: bill.year,
+            quarter: bill.quarter,
+          });
+        }
+
+        return quarters;
+      }, new Map())
+      .values(),
+  ).sort((a, b) => {
+    if (a.year !== b.year) return b.year - a.year;
+    return b.quarter - a.quarter;
+  });
+
   const filteredBills = bills.filter((bill) => {
     const searchLower = searchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       bill.trainer.name.toLowerCase().includes(searchLower) ||
       bill.team.name.toLowerCase().includes(searchLower) ||
-      `q${bill.quarter}`.includes(searchLower)
-    );
+      `q${bill.quarter}`.includes(searchLower);
+    const matchesQuarter =
+      selectedQuarterKey === "all" ||
+      `${bill.year}-${bill.quarter}` === selectedQuarterKey;
+
+    return matchesSearch && matchesQuarter;
   });
 
   const groupedBills = Array.from(
@@ -128,6 +162,24 @@ function BillTable({ bills, session }) {
             </InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
+          <div className="w-full flex flex-col md:flex-row gap-3 md:max-w-2xl">
+            <Select
+              value={selectedQuarterKey}
+              onValueChange={setSelectedQuarterKey}
+            >
+              <SelectTrigger className="w-full md:w-56">
+                <SelectValue placeholder="Quartal filtern" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle Quartale</SelectItem>
+                {availableQuarters.map((quarter) => (
+                  <SelectItem key={quarter.key} value={quarter.key}>
+                    {quarter.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         <Button variant="success" asChild>
           <Link href="/abrechnung/neu">
             <PlusIcon /> Neue Abrechnung
@@ -162,7 +214,7 @@ function BillTable({ bills, session }) {
                 colSpan={isAdminOrKassenwart ? 8 : 7}
                 className="text-center text-muted-foreground"
               >
-                {searchTerm
+                {searchTerm || selectedQuarterKey !== "all"
                   ? "Keine Ergebnisse gefunden"
                   : "Keine Abrechnungen vorhanden"}
               </TableCell>
