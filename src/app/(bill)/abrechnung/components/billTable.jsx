@@ -1,5 +1,5 @@
 "use client";
-import { useState, useTransition } from "react";
+import { Fragment, useState, useTransition } from "react";
 import {
   Table,
   TableBody,
@@ -91,6 +91,25 @@ function BillTable({ bills, session }) {
     );
   });
 
+  const groupedBills = Array.from(
+    filteredBills
+      .reduce((groups, bill) => {
+        const groupKey = `${bill.year}-${bill.quarter}`;
+
+        if (!groups.has(groupKey)) {
+          groups.set(groupKey, {
+            key: groupKey,
+            label: formatQuarter(bill.quarter, bill.year),
+            bills: [],
+          });
+        }
+
+        groups.get(groupKey).bills.push(bill);
+        return groups;
+      }, new Map())
+      .values(),
+  );
+
   return (
     <>
       <div className="w-full flex flex-col md:flex-row gap-6 justify-between">
@@ -149,72 +168,88 @@ function BillTable({ bills, session }) {
               </TableCell>
             </TableRow>
           ) : (
-            filteredBills.map((bill) => (
-              <TableRow
-                key={bill.id}
-                className="cursor-pointer hover:bg-gray-50"
-                onClick={() => handleRowClick(bill.id)}
-              >
-                <TableCell className="font-medium">{bill.id}</TableCell>
-                <TableCell className="font-medium">
-                  {bill.trainer.name}
-                </TableCell>
-                <TableCell>{bill.team.name}</TableCell>
-                <TableCell>{formatQuarter(bill.quarter, bill.year)}</TableCell>
-                <TableCell>
-                  {new Date(bill.createdAt).toLocaleDateString("de-DE")}
-                </TableCell>
-                <TableCell>
-                  {bill.status === "paid" ? (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <CheckCircle2
-                          className="text-green-700"
-                          size={"22px"}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Bezahlt</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  ) : (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <CircleAlert
-                          className="text-yellow-600"
-                          size={"22px"}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Ausstehend</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  {formatCurrency(bill.totalCost)}
-                </TableCell>
-                {isAdminOrKassenwart && (
-                  <TableCell className="text-right">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          type="button"
-                          size="icon-sm"
-                          variant="ghost"
-                          aria-label="Abrechnung löschen"
-                          onClick={(event) => handleDeleteClick(event, bill)}
-                        >
-                          <Trash2 className="text-destructive" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Löschen</p>
-                      </TooltipContent>
-                    </Tooltip>
+            groupedBills.map((group) => (
+              <Fragment key={group.key}>
+                <TableRow className="bg-muted/30 hover:bg-muted/30">
+                  <TableCell
+                    colSpan={isAdminOrKassenwart ? 8 : 7}
+                    className="font-semibold"
+                  >
+                    {group.label} ({group.bills.length})
                   </TableCell>
-                )}
-              </TableRow>
+                </TableRow>
+                {group.bills.map((bill) => (
+                  <TableRow
+                    key={bill.id}
+                    className="cursor-pointer hover:bg-gray-50"
+                    onClick={() => handleRowClick(bill.id)}
+                  >
+                    <TableCell className="font-medium">{bill.id}</TableCell>
+                    <TableCell className="font-medium">
+                      {bill.trainer.name}
+                    </TableCell>
+                    <TableCell>{bill.team.name}</TableCell>
+                    <TableCell>
+                      {formatQuarter(bill.quarter, bill.year)}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(bill.createdAt).toLocaleDateString("de-DE")}
+                    </TableCell>
+                    <TableCell>
+                      {bill.status === "paid" ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <CheckCircle2
+                              className="text-green-700"
+                              size={"22px"}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Bezahlt</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <CircleAlert
+                              className="text-yellow-600"
+                              size={"22px"}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Ausstehend</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(bill.totalCost)}
+                    </TableCell>
+                    {isAdminOrKassenwart && (
+                      <TableCell className="text-right">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              type="button"
+                              size="icon-sm"
+                              variant="ghost"
+                              aria-label="Abrechnung löschen"
+                              onClick={(event) =>
+                                handleDeleteClick(event, bill)
+                              }
+                            >
+                              <Trash2 className="text-destructive" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Löschen</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </Fragment>
             ))
           )}
         </TableBody>
