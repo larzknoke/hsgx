@@ -162,24 +162,24 @@ function BillTable({ bills, session }) {
             </InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
-          <div className="w-full flex flex-col md:flex-row gap-3 md:max-w-2xl">
-            <Select
-              value={selectedQuarterKey}
-              onValueChange={setSelectedQuarterKey}
-            >
-              <SelectTrigger className="w-full md:w-56">
-                <SelectValue placeholder="Quartal filtern" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle Quartale</SelectItem>
-                {availableQuarters.map((quarter) => (
-                  <SelectItem key={quarter.key} value={quarter.key}>
-                    {quarter.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="w-full flex flex-col md:flex-row gap-3 md:max-w-2xl">
+          <Select
+            value={selectedQuarterKey}
+            onValueChange={setSelectedQuarterKey}
+          >
+            <SelectTrigger className="w-full md:w-56">
+              <SelectValue placeholder="Quartal filtern" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Alle Quartale</SelectItem>
+              {availableQuarters.map((quarter) => (
+                <SelectItem key={quarter.key} value={quarter.key}>
+                  {quarter.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <Button variant="success" asChild>
           <Link href="/abrechnung/neu">
             <PlusIcon /> Neue Abrechnung
@@ -223,12 +223,18 @@ function BillTable({ bills, session }) {
             groupedBills.map((group) => (
               <Fragment key={group.key}>
                 <TableRow className="bg-muted/30 hover:bg-muted/30">
-                  <TableCell
-                    colSpan={isAdminOrKassenwart ? 8 : 7}
-                    className="font-semibold"
-                  >
+                  <TableCell colSpan={6} className="font-semibold">
                     {group.label} ({group.bills.length})
                   </TableCell>
+                  <TableCell className="text-right font-semibold">
+                    {formatCurrency(
+                      group.bills.reduce(
+                        (sum, bill) => sum + bill.totalCost,
+                        0,
+                      ),
+                    )}
+                  </TableCell>
+                  {isAdminOrKassenwart && <TableCell></TableCell>}
                 </TableRow>
                 {group.bills.map((bill) => (
                   <TableRow
